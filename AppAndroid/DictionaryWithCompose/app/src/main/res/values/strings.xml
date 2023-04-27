@@ -1,0 +1,18 @@
+<resources>
+    <string name="app_name">SmartDictionary</string>
+    <string name="title_activity_login">LoginActivity</string>
+    <string name="password_requirment_characters">Password must contain at least 8 characters</string>
+    <string name="password_requirment_uppercase">Password must contain at least 1 uppercase letter</string>
+    <string name="password_requirment_digit">Password must contain at least 1 digit</string>
+    <string name="title_activity_auth">AuthActivity</string>
+    <string name="title_Login">Login</string>
+    <string name="title_Register">Register</string>
+    <string name="label_email">Email Address</string>
+    <string name="label_password">Password</string>
+    <string name="cd_show_password">Show Password</string>
+    <string name="cd_hide_password">Hide Password</string>
+    <string name="cd_login">Login</string>
+    <string name="cd_register">Sign In</string>
+    <string name="title_activity_navigation_drawer">NavigationDrawer</string>
+    <string name="cd_open_navigation_drawer">Navigation Drawer</string>
+</resources>
