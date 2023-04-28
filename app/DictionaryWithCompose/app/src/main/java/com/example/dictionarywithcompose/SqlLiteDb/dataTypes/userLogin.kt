@@ -1,4 +1,4 @@
-package com.example.dictionarywithcompose.SqlLiteDb.dataTypes
+package com.example.dictionarywithcompose.SqlLiteDb.dataTypes // ktlint-disable package-name
 
 data class UserLogin(
     val isLoggedIn: Boolean = false,

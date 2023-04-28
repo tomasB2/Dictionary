@@ -66,7 +66,6 @@ fun TranslationScreen(navController: NavHostController) {
 fun SearchScreenFull(navController: NavHostController) {
     MaterialTheme {
         SearchScreen(navController = navController)
-
     }
 }
 

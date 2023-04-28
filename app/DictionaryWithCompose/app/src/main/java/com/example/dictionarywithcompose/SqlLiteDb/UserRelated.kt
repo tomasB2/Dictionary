@@ -4,6 +4,7 @@ import android.content.ContentValues
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
+import com.example.dictionarywithcompose.Activities.SpeechRecognition.dataTypes.WordOnScreen
 import com.example.dictionarywithcompose.SqlLiteDb.dataTypes.UserLogin
 
 class MyDatabaseHelper(context: Context) :
@@ -14,7 +15,9 @@ class MyDatabaseHelper(context: Context) :
         private const val DATABASE_NAME = "my_database"
         private const val LIST_TABLE_NAME = "my_list_table"
         private const val COLUMN_LIST_ID = "list_id"
-        private const val COLUMN_LIST_STRING = "list_string"
+        private const val COLUMN_LIST_STRING = "list_word"
+        private const val COLUMN_LIST_MEANING = "list_meaning"
+        private const val COLUMN_LIST_EXAMPLE = "list_example"
         private const val LOGIN_TABLE_NAME = "my_login_table"
         private const val COLUMN_IS_LOGGED_IN = "is_logged_in"
         private const val COLUMN_USERNAME = "username"
@@ -22,7 +25,7 @@ class MyDatabaseHelper(context: Context) :
     }
 
     override fun onCreate(db: SQLiteDatabase?) {
-        db?.execSQL("CREATE TABLE $LIST_TABLE_NAME ($COLUMN_LIST_ID INTEGER PRIMARY KEY AUTOINCREMENT, $COLUMN_LIST_STRING TEXT)")
+        db?.execSQL("CREATE TABLE $LIST_TABLE_NAME ($COLUMN_LIST_ID INTEGER PRIMARY KEY AUTOINCREMENT, $COLUMN_LIST_STRING TEXT, $COLUMN_LIST_MEANING TEXT, $COLUMN_LIST_EXAMPLE TEXT)")
         db?.execSQL("CREATE TABLE $LOGIN_TABLE_NAME ($COLUMN_IS_LOGGED_IN INTEGER, $COLUMN_USERNAME TEXT, $COLUMN_PROFILE_IMAGE TEXT)")
     }
 
@@ -30,25 +33,51 @@ class MyDatabaseHelper(context: Context) :
         // Handle database upgrade if needed
     }
 
-    fun insertString(string: String) {
+    fun insertString(string: WordOnScreen) {
         val db = this.writableDatabase
         val values = ContentValues().apply {
-            put(COLUMN_LIST_STRING, string)
+            put(COLUMN_LIST_STRING, string.word)
+            put(COLUMN_LIST_MEANING, string.meaning)
+            put(COLUMN_LIST_EXAMPLE, string.example)
         }
         db.insert(LIST_TABLE_NAME, null, values)
         db.close()
     }
-
-    fun getAllStrings(): List<String> {
-        val list = mutableListOf<String>()
+    fun getLastString(): WordOnScreen {
+        val db = this.readableDatabase
+        val cursor = db.rawQuery("SELECT * FROM $LIST_TABLE_NAME", null)
+        var wordToReturn = WordOnScreen()
+        cursor.use {
+            if (it.moveToLast()) {
+                val index = it.getColumnIndex(COLUMN_LIST_STRING)
+                val indexMeaning = it.getColumnIndex(COLUMN_LIST_MEANING)
+                val indexExample = it.getColumnIndex(COLUMN_LIST_EXAMPLE)
+                if (index >= 0 && index <= it.columnCount &&
+                    indexMeaning >= 0 && indexMeaning <= it.columnCount &&
+                    indexExample >= 0 && indexExample <= it.columnCount ) {
+                    wordToReturn = WordOnScreen(it.getString(index), it.getString(indexMeaning), it.getString(indexExample))
+                }
+            }
+        }
+        db.close()
+        return wordToReturn
+    }
+    fun getAllStrings(): List<WordOnScreen> {
+        val list = mutableListOf<WordOnScreen>()
         val db = this.readableDatabase
         val cursor = db.rawQuery("SELECT * FROM $LIST_TABLE_NAME", null)
         cursor.use {
             while (it.moveToNext()) {
                 val index = it.getColumnIndex(COLUMN_LIST_STRING)
-                if (index >= 0 && index <= it.columnCount) {
-                    val string = it.getString(index)
-                    list.add(string)
+                val indexMeaning = it.getColumnIndex(COLUMN_LIST_MEANING)
+                val indexExample = it.getColumnIndex(COLUMN_LIST_EXAMPLE)
+                if (index >= 0 && index <= it.columnCount &&
+                    indexMeaning >= 0 && indexMeaning <= it.columnCount &&
+                    indexExample >= 0 && indexExample <= it.columnCount) {
+                    val name = it.getString(index)
+                    val meaning = it.getString(indexMeaning)
+                    val example = it.getString(indexExample)
+                    list.add(WordOnScreen(name, meaning, example))
                 }
             }
         }
