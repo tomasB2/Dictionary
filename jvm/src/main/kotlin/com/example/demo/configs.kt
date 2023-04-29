@@ -6,7 +6,7 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.web.method.support.HandlerMethodArgumentResolver
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
-import repository.implementations.mappers.UserMapper
+import com.example.demo.user.repo.UserMapper
 import java.sql.Connection
 
 @Suppress("unused")

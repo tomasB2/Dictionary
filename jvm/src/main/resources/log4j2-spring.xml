@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration>
+    <Appenders>
+        <Console name="STDOUT">
+            <PatternLayout pattern="%m MDC%X%n"/>
+        </Console>
+        <SMTP name="WarnMail" subject="Warn Log" to="dicionariointeligente@gmail.com" from="test@logging.apache.org"
+              smtpHost="localhost" smtpPort="25" bufferSize="50">
+        </SMTP>
+        <SMTP name="ErrorMail" subject="Error Log" to="dicionariointeligente@gmail.com" from="test@logging.apache.org"
+              smtpHost="localhost" smtpPort="25" bufferSize="50">
+        </SMTP>
+        <File name="File" fileName="dictionary-log4j2.log">
+            <PatternLayout>
+                <pattern>%d %p %C{1.} [%t] %m%n</pattern>
+            </PatternLayout>
+        </File>
+    </Appenders>
+
+    <Loggers>
+        <Logger name="com.example.demo.friends.FriendsController" level="trace">
+            <AppenderRef ref="File"/>
+        </Logger>
+        <Logger name="com.example.demo.friends.service.FriendsService" level="trace">
+            <AppenderRef ref="File"/>
+        </Logger>
+        <Logger name="com.example.demo.friends.repo.FriendsRepoSql" level="trace">
+            <AppenderRef ref="File"/>
+        </Logger>
+        <Root level="info">
+            <AppenderRef ref="STDOUT"/>
+        </Root>
+        <Root level="warn">
+            <AppenderRef ref="STDOUT"/>
+            <AppenderRef ref="WarnMail"/>
+        </Root>
+        <Root level="error">
+            <AppenderRef ref="STDOUT"/>
+            <AppenderRef ref="ErrorMail"/>
+        </Root>
+    </Loggers>
+</Configuration>
