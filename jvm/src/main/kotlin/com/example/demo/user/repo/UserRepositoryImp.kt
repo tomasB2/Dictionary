@@ -1,11 +1,11 @@
 package com.example.demo.user.repo
 
-import com.example.demo.common.repository.utils.*
-import com.example.demo.user.domain.User
-import com.example.demo.user.domain.UserImg
 import com.example.demo.common.domain.ErrorCause
 import com.example.demo.common.domain.ErrorResponse
 import com.example.demo.common.domain.Response
+import com.example.demo.common.repository.utils.* // ktlint-disable no-wildcard-imports
+import com.example.demo.user.domain.User
+import com.example.demo.user.domain.UserImg
 import org.slf4j.LoggerFactory
 import java.sql.Connection
 import java.util.*

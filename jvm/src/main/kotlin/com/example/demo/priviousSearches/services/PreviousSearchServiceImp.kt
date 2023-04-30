@@ -1,8 +1,8 @@
 package com.example.demo.priviousSearches.services // ktlint-disable package-name
 
+import com.example.demo.common.domain.Response
 import com.example.demo.common.repository.implementations.TransactionManagerImp
 import com.example.demo.meanings.domain.model.WordInfo
-import com.example.demo.common.domain.Response
 import org.springframework.stereotype.Service
 
 @Suppress("unused")

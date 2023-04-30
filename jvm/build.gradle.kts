@@ -22,13 +22,22 @@ dependencies {
             replacedBy("org.springframework.boot:spring-boot-starter-log4j2", "Use Log4j2 instead of Logback")
         }
     }
-
+    implementation("com.sun.mail:javax.mail:1.6.2")
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     implementation("org.postgresql:postgresql:42.5.0")
     implementation("com.google.cloud:google-cloud-translate:2.2.0")
+}
+configurations.all {
+    resolutionStrategy {
+        eachDependency {
+            if (requested.group == "org.apache.logging.log4j") {
+                useVersion("2.20.0")
+            }
+        }
+    }
 }
 
 tasks.withType<KotlinCompile> {

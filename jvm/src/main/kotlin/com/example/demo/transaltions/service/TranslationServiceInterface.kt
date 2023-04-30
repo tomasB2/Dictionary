@@ -1,7 +1,7 @@
 package com.example.demo.transaltions.service // ktlint-disable package-name
 
-import com.example.demo.transaltions.domain.TranslationDAO
 import com.example.demo.common.domain.Response
+import com.example.demo.transaltions.domain.TranslationDAO
 
 interface TranslationServiceInterface {
     /**

@@ -1,12 +1,12 @@
 package com.example.demo.transaltions.service // ktlint-disable package-name
 
+import com.example.demo.common.domain.ErrorCause
+import com.example.demo.common.domain.ErrorResponse
+import com.example.demo.common.domain.Response
 import com.example.demo.transaltions.domain.Language
 import com.example.demo.transaltions.domain.TranslationDAO
 import com.example.demo.transaltions.domain.Translator
 import com.example.demo.transaltions.domain.languageOf
-import com.example.demo.common.domain.ErrorCause
-import com.example.demo.common.domain.ErrorResponse
-import com.example.demo.common.domain.Response
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 

@@ -1,8 +1,8 @@
 package com.example.demo.user.repo
 
+import com.example.demo.common.domain.Response
 import com.example.demo.user.domain.User
 import com.example.demo.user.domain.UserImg
-import com.example.demo.common.domain.Response
 
 interface UserRepositoryInterface {
     fun getUserByName(name: String): Response<User?>

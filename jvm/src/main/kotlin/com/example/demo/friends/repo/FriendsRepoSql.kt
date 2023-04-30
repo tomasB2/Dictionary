@@ -1,11 +1,11 @@
 package com.example.demo.friends.repo
 
-import com.example.demo.friends.Friends
 import com.example.demo.common.domain.Response
-import org.postgresql.util.PGobject
-import org.slf4j.LoggerFactory
 import com.example.demo.common.repository.utils.createInDataBase
 import com.example.demo.common.repository.utils.updateInDataBase
+import com.example.demo.friends.Friends
+import org.postgresql.util.PGobject
+import org.slf4j.LoggerFactory
 import java.sql.Connection
 
 class FriendsRepoSql(

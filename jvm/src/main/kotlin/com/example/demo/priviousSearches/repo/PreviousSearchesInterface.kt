@@ -1,7 +1,7 @@
 package com.example.demo.priviousSearches.repo
 
-import com.example.demo.meanings.domain.model.WordInfo
 import com.example.demo.common.domain.Response
+import com.example.demo.meanings.domain.model.WordInfo
 
 interface PreviousSearchesInterface {
     fun getPreviousSearches(userName: String): Response<List<WordInfo>>

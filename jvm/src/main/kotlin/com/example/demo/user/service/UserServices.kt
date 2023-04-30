@@ -1,13 +1,13 @@
 package com.example.demo.user.service // ktlint-disable package-name
 
+import com.example.demo.common.domain.ErrorCause
+import com.example.demo.common.domain.ErrorResponse
+import com.example.demo.common.domain.Response
 import com.example.demo.common.repository.implementations.TransactionManagerImp
 import com.example.demo.common.utils.encodeString
 import com.example.demo.user.domain.LogInInfo
 import com.example.demo.user.domain.User
 import com.example.demo.user.domain.UserImg
-import com.example.demo.common.domain.ErrorCause
-import com.example.demo.common.domain.ErrorResponse
-import com.example.demo.common.domain.Response
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 import java.util.*

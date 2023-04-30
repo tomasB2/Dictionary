@@ -1,9 +1,9 @@
 package com.example.demo.user.service // ktlint-disable package-name
 
+import com.example.demo.common.domain.Response
 import com.example.demo.user.domain.LogInInfo
 import com.example.demo.user.domain.User
 import com.example.demo.user.domain.UserImg
-import com.example.demo.common.domain.Response
 
 interface UserServiceInterface {
     fun getUser(name: String): Response<User?>

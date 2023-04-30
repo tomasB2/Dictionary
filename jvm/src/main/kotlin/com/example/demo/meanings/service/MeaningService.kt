@@ -1,12 +1,12 @@
 package com.example.demo.meanings.service // ktlint-disable package-name
 
+import com.example.demo.common.domain.ErrorCause
+import com.example.demo.common.domain.ErrorResponse
+import com.example.demo.common.domain.Response
 import com.example.demo.common.repository.implementations.TransactionManagerImp
 import com.example.demo.meanings.domain.LanguageResolver
 import com.example.demo.meanings.domain.model.output.WordMeaningOut
 import com.example.demo.transaltions.domain.languageOf
-import com.example.demo.common.domain.ErrorCause
-import com.example.demo.common.domain.ErrorResponse
-import com.example.demo.common.domain.Response
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 

@@ -1,12 +1,12 @@
-import com.example.demo.http.pipeline.AuthenticationInterceptor // ktlint-disable filename
-import com.example.demo.http.pipeline.UserArgumentResolver
+import com.example.demo.common.http.pipeline.AuthenticationInterceptor // ktlint-disable filename
+import com.example.demo.common.http.pipeline.UserArgumentResolver
+import com.example.demo.user.repo.UserMapper
 import org.postgresql.ds.PGSimpleDataSource
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.web.method.support.HandlerMethodArgumentResolver
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
-import com.example.demo.user.repo.UserMapper
 import java.sql.Connection
 
 @Suppress("unused")

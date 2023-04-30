@@ -1,11 +1,11 @@
 package com.example.demo.priviousSearches.repo
 
-import com.example.demo.common.repository.utils.PreviousSearchesQueris
-import com.example.demo.meanings.domain.model.WordInfo
 import com.example.demo.common.domain.Response
-import org.postgresql.util.PGobject
+import com.example.demo.common.repository.utils.PreviousSearchesQueris
 import com.example.demo.common.repository.utils.createInDataBase
 import com.example.demo.common.repository.utils.getInDataBase
+import com.example.demo.meanings.domain.model.WordInfo
+import org.postgresql.util.PGobject
 import java.sql.Connection
 
 class PreviousSearchesImp(
