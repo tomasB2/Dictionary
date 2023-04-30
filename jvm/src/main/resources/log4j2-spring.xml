@@ -38,13 +38,13 @@
         <Logger name="com.example.demo.transaltions.service.TranslationService" level="trace">
             <AppenderRef ref="File"/>
         </Logger>
-        <Logger name="com.example.demo.priviousSearches.PreviousSearchesController" level="trace">
+        <Logger name="com.example.demo.previousSearches.PreviousSearchesController" level="trace">
             <AppenderRef ref="File"/>
         </Logger>
-        <Logger name="com.example.demo.priviousSearches.services.PreviousSearchServiceImp" level="trace">
+        <Logger name="com.example.demo.previousSearches.services.PreviousSearchServiceImp" level="trace">
             <AppenderRef ref="File"/>
         </Logger>
-        <Logger name="com.example.demo.priviousSearches.repo.PreviousSearchesImp" level="trace">
+        <Logger name="com.example.demo.previousSearches.repo.PreviousSearchesImp" level="trace">
             <AppenderRef ref="File"/>
         </Logger>
         <Logger name="com.example.demo.meanings.MeaningController" level="trace">

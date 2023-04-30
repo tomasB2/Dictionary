@@ -1,4 +1,4 @@
-package com.example.demo.priviousSearches.services // ktlint-disable package-name
+package com.example.demo.previousSearches.services // ktlint-disable package-name
 
 import com.example.demo.common.domain.Response
 import com.example.demo.common.repository.implementations.TransactionManagerImp

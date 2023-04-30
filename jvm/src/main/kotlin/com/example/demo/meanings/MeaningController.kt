@@ -4,7 +4,7 @@ import com.example.demo.common.http.utils.Uris
 import com.example.demo.common.http.utils.responseGenerator
 import com.example.demo.meanings.domain.model.inputs.MeaningInput
 import com.example.demo.meanings.service.MeaningServiceInterface
-import com.example.demo.priviousSearches.services.PreviousSearchServiceInterface
+import com.example.demo.previousSearches.services.PreviousSearchServiceInterface
 import com.example.demo.user.service.UserServiceInterface
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody

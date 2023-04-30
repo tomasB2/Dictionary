@@ -1,8 +1,8 @@
-package com.example.demo.priviousSearches
+package com.example.demo.previousSearches
 
 import com.example.demo.common.http.utils.Uris
 import com.example.demo.common.http.utils.responseGenerator
-import com.example.demo.priviousSearches.services.PreviousSearchServiceInterface
+import com.example.demo.previousSearches.services.PreviousSearchServiceInterface
 import com.example.demo.user.domain.User
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.DeleteMapping

@@ -1,15 +1,15 @@
 package com.example.demo.common.repository.implementations
 
 import com.example.demo.common.repository.Transaction
-import com.example.demo.priviousSearches.repo.SearchMapper
 import com.example.demo.friends.repo.FriendsMapper
 import com.example.demo.friends.repo.FriendsRepoInterface
 import com.example.demo.friends.repo.FriendsRepoSql
+import com.example.demo.previousSearches.repo.PreviousSearchesImp
+import com.example.demo.previousSearches.repo.PreviousSearchesInterface
+import com.example.demo.previousSearches.repo.SearchMapper
+import com.example.demo.user.repo.UserMapper
 import com.example.demo.user.repo.UserRepositoryImp
 import com.example.demo.user.repo.UserRepositoryInterface
-import com.example.demo.priviousSearches.repo.PreviousSearchesInterface
-import com.example.demo.priviousSearches.repo.PreviousSearchesImp
-import com.example.demo.user.repo.UserMapper
 import java.sql.Connection
 
 class TransactionImp(

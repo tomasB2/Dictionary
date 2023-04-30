@@ -1,4 +1,4 @@
-package com.example.demo.priviousSearches.repo
+package com.example.demo.previousSearches.repo
 
 import com.example.demo.common.domain.Response
 import com.example.demo.meanings.domain.model.WordInfo
