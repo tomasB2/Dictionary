@@ -15,4 +15,6 @@
     <string name="cd_register">Sign In</string>
     <string name="title_activity_navigation_drawer">NavigationDrawer</string>
     <string name="cd_open_navigation_drawer">Navigation Drawer</string>
+    <string name="sun_image">Sun</string>
+    <string name="moon_image">Moon</string>
 </resources>

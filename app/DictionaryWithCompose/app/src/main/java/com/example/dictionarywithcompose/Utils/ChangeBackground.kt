@@ -1,4 +1,5 @@
 package com.example.dictionarywithcompose.Utils // ktlint-disable package-name
+/*
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -34,3 +35,4 @@ fun ChangeBackground(
         }
     }
 }
+*/

@@ -1,12 +1,15 @@
 package com.example.dictionarywithcompose.Activities.SpeechRecognition // ktlint-disable package-name
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Card
 import androidx.compose.material.MaterialTheme
@@ -16,6 +19,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -24,30 +28,37 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavHostController
 import com.example.dictionarywithcompose.Activities.SpeechRecognition.dataTypes.MainScreenState
 import com.example.dictionarywithcompose.Activities.SpeechRecognition.dataTypes.WordOnScreen
 
 // ktlint-disable package-name
 
 @Composable
-fun SearchScreen(navController: NavHostController) {
+fun SearchScreen(
+    buttonToAdd: @Composable () -> Unit = {},
+) {
     val viewModel = viewModel<SearchViewModel>()
-    val MainState = viewModel.uiState.collectAsState().value
+    val uiState = viewModel.uiState.collectAsState().value
     val handleEvent: (String) -> Unit = {
         viewModel.changeTextValue(it)
     }
     val displayWord = viewModel.DisplayedWord.collectAsState().value
     Column() {
-        SearchBarVoiceSearch(modifier = Modifier, MainState = MainState, handleEvent = handleEvent)
+        SearchBarVoiceSearch(modifier = Modifier, uiState = uiState, handleEvent = handleEvent) {
+            buttonToAdd()
+        }
         SearchPageBody(modifier = Modifier) {
-            DisplayWordMeaning(displayWord)
+            LazyColumn(content = {
+                item {
+                    DisplayWordMeaning(displayWord)
+                }
+            })
         }
     }
 }
 
 @Composable
-fun SearchPageBody(modifier: Modifier.Companion, DisplayWord: @Composable () -> Unit) {
+fun SearchPageBody(modifier: Modifier, DisplayWord: @Composable () -> Unit) {
     Card(
         modifier = modifier
             .padding(16.dp)
@@ -65,21 +76,24 @@ fun SearchPageBody(modifier: Modifier.Companion, DisplayWord: @Composable () -> 
 }
 
 @Composable
-fun SearchBarVoiceSearch(modifier: Modifier, MainState: MainScreenState, handleEvent: (String) -> Unit) {
+fun SearchBarVoiceSearch(modifier: Modifier, uiState: MainScreenState, handleEvent: (String) -> Unit, buttonToAdd: @Composable () -> Unit) {
     Row(
         modifier
-            .padding(16.dp)
-            .fillMaxWidth(),
+            .padding(5.dp).background(color = MaterialTheme.colors.background),
         horizontalArrangement = Arrangement.Center,
     ) {
-        SearchBar(modifier = modifier, MainState = MainState, handleEvent = handleEvent) {
+        SearchBar(MainState = uiState, handleEvent = handleEvent) {
             ButtonForSpeech(handleEvent)
+        }
+        Spacer(modifier = Modifier.padding(5.dp))
+        Box(Modifier.fillMaxWidth()) {
+            buttonToAdd()
         }
     }
 }
 
 @Composable
-fun SearchBar(modifier: Modifier, MainState: MainScreenState, handleEvent: (String) -> Unit, trailingIcon: @Composable () -> Unit) {
+fun SearchBar(MainState: MainScreenState, handleEvent: (String) -> Unit, trailingIcon: @Composable () -> Unit) {
     TextField(
         value = MainState.text,
         onValueChange = {
@@ -90,21 +104,22 @@ fun SearchBar(modifier: Modifier, MainState: MainScreenState, handleEvent: (Stri
             keyboardType = KeyboardType.Text,
 
         ),
-        /*onImeActionPerformed ={
-            // TODO("add search funtionality")
-        },*/
         trailingIcon = trailingIcon,
     )
 }
 
 @Composable
 fun DisplayWordMeaning(displayWord: WordOnScreen) {
-    Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.Top, horizontalAlignment = Alignment.CenterHorizontally) {
+    Column(
+        Modifier.fillMaxWidth().background(color = MaterialTheme.colors.background),
+        verticalArrangement = Arrangement.Top,
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
         Text(
             text = displayWord.word,
             style = TextStyle(
                 fontSize = 60.sp,
-                color = MaterialTheme.colors.onSurface,
+                color = Color.Black,
                 fontWeight = FontWeight.Bold,
                 textAlign = TextAlign.Center,
             ),
@@ -114,7 +129,7 @@ fun DisplayWordMeaning(displayWord: WordOnScreen) {
             text = "Meaning:",
             style = TextStyle(
                 fontSize = 30.sp,
-                color = MaterialTheme.colors.onSurface,
+                color = Color.Black,
                 fontWeight = FontWeight.Bold,
                 textAlign = TextAlign.Center,
             ),
@@ -123,8 +138,8 @@ fun DisplayWordMeaning(displayWord: WordOnScreen) {
             text = displayWord.meaning,
             style = TextStyle(
                 fontSize = 20.sp,
-                color = MaterialTheme.colors.onSurface,
-                fontWeight = FontWeight.Bold,
+                color = Color.Black,
+                fontWeight = FontWeight.Normal,
                 textAlign = TextAlign.Center,
                 fontStyle = androidx.compose.ui.text.font.FontStyle.Italic,
             ),
@@ -134,7 +149,7 @@ fun DisplayWordMeaning(displayWord: WordOnScreen) {
             text = "Example:",
             style = TextStyle(
                 fontSize = 30.sp,
-                color = MaterialTheme.colors.onSurface,
+                color = Color.Black,
                 fontWeight = FontWeight.Bold,
                 textAlign = TextAlign.Center,
             ),
@@ -143,7 +158,7 @@ fun DisplayWordMeaning(displayWord: WordOnScreen) {
             text = displayWord.example,
             style = TextStyle(
                 fontSize = 20.sp,
-                color = MaterialTheme.colors.onSurface,
+                color = Color.Black,
                 fontWeight = FontWeight.Normal,
                 textAlign = TextAlign.Center,
                 fontStyle = androidx.compose.ui.text.font.FontStyle.Normal,

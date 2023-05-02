@@ -27,11 +27,7 @@
             android:exported="false"
             android:label="@string/title_activity_auth"
             android:theme="@style/Theme.DictionaryWithCompose" />
-        <activity
-            android:name=".Activities.LoginActivity"
-            android:exported="false"
-            android:label="@string/title_activity_login"
-            android:theme="@style/Theme.DictionaryWithCompose" />
+
         <activity
             android:name=".MainActivity"
             android:exported="true"

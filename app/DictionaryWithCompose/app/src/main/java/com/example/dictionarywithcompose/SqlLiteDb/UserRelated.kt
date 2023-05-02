@@ -30,7 +30,7 @@ class MyDatabaseHelper(context: Context) :
     }
 
     override fun onUpgrade(db: SQLiteDatabase?, oldVersion: Int, newVersion: Int) {
-        // Handle database upgrade if needed
+        //
     }
 
     fun insertString(string: WordOnScreen) {
@@ -54,7 +54,8 @@ class MyDatabaseHelper(context: Context) :
                 val indexExample = it.getColumnIndex(COLUMN_LIST_EXAMPLE)
                 if (index >= 0 && index <= it.columnCount &&
                     indexMeaning >= 0 && indexMeaning <= it.columnCount &&
-                    indexExample >= 0 && indexExample <= it.columnCount ) {
+                    indexExample >= 0 && indexExample <= it.columnCount
+                ) {
                     wordToReturn = WordOnScreen(it.getString(index), it.getString(indexMeaning), it.getString(indexExample))
                 }
             }
@@ -73,7 +74,8 @@ class MyDatabaseHelper(context: Context) :
                 val indexExample = it.getColumnIndex(COLUMN_LIST_EXAMPLE)
                 if (index >= 0 && index <= it.columnCount &&
                     indexMeaning >= 0 && indexMeaning <= it.columnCount &&
-                    indexExample >= 0 && indexExample <= it.columnCount) {
+                    indexExample >= 0 && indexExample <= it.columnCount
+                ) {
                     val name = it.getString(index)
                     val meaning = it.getString(indexMeaning)
                     val example = it.getString(indexExample)

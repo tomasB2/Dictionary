@@ -42,16 +42,16 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.example.dictionarywithcompose.Activities.ThemeRelated.ThemeConstructor
 import com.example.dictionarywithcompose.R
-import com.example.dictionarywithcompose.Utils.checkCameraHardware
-import com.example.dictionarywithcompose.ui.theme.DictionaryWithComposeTheme
+//import com.example.dictionarywithcompose.Utils.checkCameraHardware
 import kotlinx.coroutines.launch
 
 class NavigationDrawer : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            DictionaryWithComposeTheme {
+            ThemeConstructor {
                 // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),
@@ -70,24 +70,22 @@ fun TopBar(
     navController: NavController,
     onNavigationIconClick: () -> Unit,
 ) {
-    MaterialTheme() {
-        TopAppBar(
-            title = {
-                Text(text = stringResource(id = R.string.app_name))
-            },
-            navigationIcon = {
-                IconButton(
-                    onClick =
-                    onNavigationIconClick,
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Menu,
-                        contentDescription = null,
-                    )
-                }
-            },
-        )
-    }
+    TopAppBar(
+        title = {
+            Text(text = stringResource(id = R.string.app_name))
+        },
+        navigationIcon = {
+            IconButton(
+                onClick =
+                onNavigationIconClick,
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Menu,
+                    contentDescription = null,
+                )
+            }
+        },
+    )
 }
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter", "CoroutineCreationDuringComposition")
@@ -96,6 +94,7 @@ fun MainNavigatorScreen(context: Context) {
     val scaffoldState = rememberScaffoldState()
     val navController = rememberNavController()
     val scope = rememberCoroutineScope()
+
     androidx.compose.material.Scaffold(
         scaffoldState = scaffoldState,
         topBar = {
@@ -116,7 +115,7 @@ fun MainNavigatorScreen(context: Context) {
             }
         },
         floatingActionButtonPosition = androidx.compose.material.FabPosition.End,*/
-        bottomBar = { BottomBarNav(navController = navController, checkCameraHardware(context)) },
+        bottomBar = { BottomBarNav(navController = navController,/* checkCameraHardware(context)*/) },
         drawerContent = {
             DrawerHeader()
             Spacer(modifier = Modifier.width(16.dp))
@@ -130,12 +129,17 @@ fun MainNavigatorScreen(context: Context) {
         drawerShape = MaterialTheme.shapes.large,
         drawerContentColor = MaterialTheme.colorScheme.background,
     ) {
-        navGraph(navHostController = navController, startDestination = "home")
+        Row() {
+            NavGraph(navHostController = navController, startDestination = "home") {
+                // CustomSwithButton()
+
+            }
+        }
     }
 }
 
 @Composable
-fun BottomBarNav(navController: NavHostController, isThereCamera: Boolean) {
+fun BottomBarNav(navController: NavHostController, isThereCamera: Boolean = true) {
     BottomNavigation(
         backgroundColor = MaterialTheme.colorScheme.surface,
         elevation = 4.dp,

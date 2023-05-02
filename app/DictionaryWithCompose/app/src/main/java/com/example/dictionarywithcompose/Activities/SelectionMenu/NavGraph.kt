@@ -1,11 +1,10 @@
 package com.example.dictionarywithcompose.Activities.SelectionMenu // ktlint-disable package-name
 
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Box // ktlint-disable import-ordering
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.Text
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -13,64 +12,71 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.example.dictionarywithcompose.Activities.CameraXRelated.CameraXScreen
+// import com.example.dictionarywithcompose.Activities.CameraXRelated.Preview
+// import com.example.dictionarywithcompose.Activities.CameraXRelated.CameraXScreen
+import com.example.dictionarywithcompose.Activities.SpeechRecognition.DisplayWordMeaning
 import com.example.dictionarywithcompose.Activities.SpeechRecognition.SearchScreen
+import com.example.dictionarywithcompose.Activities.ThemeRelated.ThemeConstructor
 import com.example.dictionarywithcompose.SqlLiteDb.MyDatabaseHelper
 
 // ktlint-disable package-name
 
 @Composable
-fun navGraph(
+fun NavGraph(
     navHostController: NavHostController,
     startDestination: String,
+    buttonToAdd: @Composable () -> Unit = {},
     // fixing the bug
 ) {
     NavHost(navController = navHostController, startDestination = startDestination) {
         composable("home") {
-            HomeScreen(navController = navHostController)
+            HomeScreen(navController = navHostController, buttonToAdd = buttonToAdd)
         }
         composable("search") {
-            SearchScreenFull(navController = navHostController)
+            SearchScreenFull(navController = navHostController, buttonToAdd = buttonToAdd)
         }
         composable("profile") {
-            ProfileScreen(navController = navHostController)
+            ProfileScreen(navController = navHostController, buttonToAdd = buttonToAdd)
         }
         composable("translation") {
-            TranslationScreen(navController = navHostController)
+            TranslationScreen(navController = navHostController, buttonToAdd = buttonToAdd)
         }
         composable("camera") {
-            CameraScreen(navController = navHostController)
+            CameraScreen(navController = navHostController, buttonToAdd = buttonToAdd)
         }
         composable("settings") {
-            SettingsScreen(navController = navHostController)
+            SettingsScreen(navController = navHostController, buttonToAdd = buttonToAdd)
         }
     }
 }
 
 @Composable
-fun SettingsScreen(navController: NavHostController) {
+fun SettingsScreen(navController: NavHostController, buttonToAdd: @Composable () -> Unit = {}) {
 }
 
 @Composable
-fun CameraScreen(navController: NavHostController) {
+fun CameraScreen(navController: NavHostController, buttonToAdd: @Composable () -> Unit = {}) {
+    CameraXScreen()
 }
 
 @Composable
-fun ProfileScreen(navController: NavHostController) {
+fun ProfileScreen(navController: NavHostController, buttonToAdd: @Composable () -> Unit = {}) {
 }
 
 @Composable
-fun TranslationScreen(navController: NavHostController) {
+fun TranslationScreen(navController: NavHostController, buttonToAdd: @Composable () -> Unit = {}) {
 }
 
 @Composable
-fun SearchScreenFull(navController: NavHostController) {
-    MaterialTheme {
-        SearchScreen(navController = navController)
+fun SearchScreenFull(navController: NavHostController, buttonToAdd: @Composable () -> Unit = {}) {
+    ThemeConstructor {
+        SearchScreen(buttonToAdd = buttonToAdd)
     }
 }
 
 @Composable
-fun HomeScreen(navController: NavHostController) {
+fun HomeScreen(navController: NavHostController, buttonToAdd: @Composable () -> Unit = {}) {
     LastSearches()
 }
 
@@ -83,7 +89,7 @@ fun LastSearches() {
         Box(modifier = Modifier.fillMaxWidth()) {
             LazyColumn {
                 items(searches.size) { search ->
-                    Text(text = search.toString())
+                    DisplayWordMeaning(searches[search])
                 }
             }
         }

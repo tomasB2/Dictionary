@@ -53,17 +53,14 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.dictionarywithcompose.Activities.Auth.DataType.AuthState
 import com.example.dictionarywithcompose.Activities.Auth.DataType.AuthenticationEvent
 import com.example.dictionarywithcompose.Activities.Auth.DataType.AuthenticationMode
+import com.example.dictionarywithcompose.Activities.ThemeRelated.ThemeConstructor
 import com.example.dictionarywithcompose.R
-import com.example.dictionarywithcompose.ui.theme.DarkPurpleBlue
-import com.example.dictionarywithcompose.ui.theme.DictionaryWithComposeTheme
-import com.example.dictionarywithcompose.ui.theme.OceanBlue
-import com.example.dictionarywithcompose.ui.theme.Purple20
 
 class AuthActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            DictionaryWithComposeTheme {
+            ThemeConstructor {
                 // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),
@@ -96,13 +93,14 @@ fun AuthContents(
 ) {
     Box(
         modifier = modifier.background(
-            Brush.verticalGradient(
+            /*Brush.verticalGradient(
                 colorStops = arrayOf(
-                    0.0f to Purple20,
+                    0.0f to MaterialTheme.colorScheme.background,
                     0.35f to OceanBlue,
                     1f to DarkPurpleBlue,
                 ),
-            ),
+            ),*/
+            MaterialTheme.colorScheme.background,
         ),
         contentAlignment = Alignment.Center,
     ) {

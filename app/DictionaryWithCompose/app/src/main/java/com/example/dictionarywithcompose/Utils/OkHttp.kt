@@ -1,4 +1,4 @@
-package com.example.dictionarywithcompose.Utils
+package com.example.dictionarywithcompose.Utils // ktlint-disable package-name
 
 import android.util.Log
 import okhttp3.Call

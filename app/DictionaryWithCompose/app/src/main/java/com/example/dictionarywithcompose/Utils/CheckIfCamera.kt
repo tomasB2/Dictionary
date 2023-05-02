@@ -1,12 +1,12 @@
 package com.example.dictionarywithcompose.Utils // ktlint-disable package-name
-
+/*
 import android.app.Activity
 import android.content.Context
 import android.content.pm.PackageManager
 import android.graphics.Camera
 import android.net.Uri
-import androidx.camera.core.ImageCapture
-import androidx.camera.core.ImageCaptureException
+//import androidx.camera.core.ImageCapture
+//import androidx.camera.core.ImageCaptureException
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import java.io.File
@@ -79,3 +79,4 @@ fun takePhoto(
     )
 }
 // read oficial documentation on camerax that will be the key to the fastest development time possible
+*/
