@@ -1,111 +1,125 @@
 package com.example.dictionarywithcompose.Activities.CameraXRelated // ktlint-disable package-name
 
-import android.util.Log
-import android.view.ViewGroup
+import android.icu.text.SimpleDateFormat
+import android.net.Uri
 import androidx.camera.core.CameraSelector
+import androidx.camera.core.ImageCapture
+import androidx.camera.core.ImageCaptureException
 import androidx.camera.core.Preview
-import androidx.camera.core.UseCase
 import androidx.camera.view.PreviewView
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.sharp.Lens
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
+import java.io.File
+import java.util.Locale
+import java.util.concurrent.Executor
 
 @Composable
-fun CameraXScreen(
-    modifier: Modifier = Modifier,
-    // scaleType: PreviewView.ScaleType = PreviewView.ScaleType.FILL_CENTER,
-    cameraSelector: CameraSelector = CameraSelector.DEFAULT_BACK_CAMERA,
+fun CameraView(
+    outputDirectory: File,
+    executor: Executor,
+    onImageCaptured: (Uri) -> Unit,
+    onError: (ImageCaptureException) -> Unit,
 ) {
-    Box(modifier = modifier) {
-        val context = LocalContext.current
-        val lifecycleOwner = LocalLifecycleOwner.current
-        var previewUseCase by remember { mutableStateOf<UseCase>(Preview.Builder().build()) }
-        CameraPreview(
-            modifier = Modifier.fillMaxSize(),
-            onUseCase = {
-                previewUseCase = it
+    val lensFacing = CameraSelector.LENS_FACING_BACK
+    val context = LocalContext.current
+    val lifecycleOwner = LocalLifecycleOwner.current
+
+    val preview = Preview.Builder().build()
+    val previewView = remember { PreviewView(context) }
+    val imageCapture: ImageCapture = remember { ImageCapture.Builder().build() }
+    val cameraSelector = CameraSelector.Builder()
+        .requireLensFacing(lensFacing)
+        .build()
+
+    LaunchedEffect(lensFacing) {
+        val cameraProvider = context.getCameraProvider()
+        cameraProvider.unbindAll()
+        cameraProvider.bindToLifecycle(
+            lifecycleOwner,
+            cameraSelector,
+            preview,
+            imageCapture,
+        )
+
+        preview.setSurfaceProvider(previewView.surfaceProvider)
+    }
+
+    Box(contentAlignment = Alignment.BottomCenter, modifier = Modifier.fillMaxSize()) {
+        AndroidView({ previewView }, modifier = Modifier.fillMaxSize())
+
+        IconButton(
+            modifier = Modifier.padding(bottom = 20.dp),
+            onClick = {
+                takePhoto(
+                    filenameFormat = "yyyy-MM-dd-HH-mm-ss-SSS",
+                    imageCapture = imageCapture,
+                    outputDirectory = outputDirectory,
+                    executor = executor,
+                    onImageCaptured = onImageCaptured,
+                    onError = onError,
+                )
+            },
+            content = {
+                Icon(
+                    imageVector = Icons.Sharp.Lens,
+                    contentDescription = "Take picture",
+                    tint = Color.White,
+                    modifier = Modifier
+                        .size(100.dp)
+                        .padding(1.dp)
+                        .border(1.dp, Color.White, CircleShape),
+                )
             },
         )
-        LaunchedEffect(previewUseCase) {
-            val cameraProvider = context.getCameraProvider()
-            try {
-                // Must unbind the use-cases before rebinding them.
-                cameraProvider.unbindAll()
-                cameraProvider.bindToLifecycle(
-                    lifecycleOwner,
-                    cameraSelector,
-                    previewUseCase,
-                )
-            } catch (ex: Exception) {
-                Log.e("CameraCapture", "Failed to bind camera use cases", ex)
-            }
-        }
     }
 }
-
-@Composable
-fun CameraPreview(
-    modifier: Modifier = Modifier,
-    scaleType: PreviewView.ScaleType = PreviewView.ScaleType.FILL_CENTER,
-    onUseCase: (UseCase) -> Unit = { },
+private fun takePhoto(
+    filenameFormat: String,
+    imageCapture: ImageCapture,
+    outputDirectory: File,
+    executor: Executor,
+    onImageCaptured: (Uri) -> Unit,
+    onError: (ImageCaptureException) -> Unit,
 ) {
-    AndroidView(
-        modifier = modifier,
-        factory = { context ->
-            val previewView = PreviewView(context).apply {
-                this.scaleType = scaleType
-                layoutParams = ViewGroup.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT,
-                    ViewGroup.LayoutParams.MATCH_PARENT,
-                )
+    val photoFile = File(
+        outputDirectory,
+        SimpleDateFormat(filenameFormat, Locale.UK).format(System.currentTimeMillis()) + ".jpg",
+    )
+
+    val outputOptions = ImageCapture.OutputFileOptions.Builder(photoFile).build()
+
+    imageCapture.takePicture(
+        outputOptions,
+        executor,
+        object : ImageCapture.OnImageSavedCallback {
+            override fun onError(exception: ImageCaptureException) {
+                onError(exception)
             }
-            onUseCase(
-                Preview.Builder()
-                    .build()
-                    .also {
-                        it.setSurfaceProvider(previewView.surfaceProvider)
-                    },
-            )
-            previewView
+
+            override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
+                val savedUri = Uri.fromFile(photoFile)
+                onImageCaptured(savedUri)
+            }
         },
     )
 }
-/*
-@Composable
-fun Preview() {
-    val context = LocalContext.current
-    val previewView = PreviewView(context)
-    val cameraProviderFuture = ProcessCameraProvider.getInstance(context)
-
-    cameraProviderFuture.addListener({
-        val cameraProvider = cameraProviderFuture.get()
-        bindPreview(context, cameraProvider, previewView)
-    }, ContextCompat.getMainExecutor(context))
-
-    AndroidView(
-        modifier = Modifier.fillMaxSize(),
-        factory = { previewView },
-    )
-}
-
-fun bindPreview(context: Context, cameraProvider: ProcessCameraProvider, previewView: PreviewView) {
-    val preview: Preview = Preview.Builder()
-        .build()
-
-    val cameraSelector: CameraSelector = CameraSelector.Builder()
-        .requireLensFacing(CameraSelector.LENS_FACING_BACK)
-        .build()
-
-    preview.setSurfaceProvider(previewView.surfaceProvider)
-
-    var camera = cameraProvider.bindToLifecycle(context as LifecycleOwner, cameraSelector, preview)
-}*/

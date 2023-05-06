@@ -1,6 +1,7 @@
 package com.example.dictionarywithcompose.Activities.SelectionMenu // ktlint-disable package-name
 
-import android.annotation.SuppressLint
+import android.Manifest
+import android.annotation.SuppressLint // ktlint-disable import-ordering
 import android.content.Context
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -44,10 +45,15 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.dictionarywithcompose.Activities.ThemeRelated.ThemeConstructor
 import com.example.dictionarywithcompose.R
-//import com.example.dictionarywithcompose.Utils.checkCameraHardware
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.PermissionState
+import com.google.accompanist.permissions.rememberPermissionState
+// import com.example.dictionarywithcompose.Utils.checkCameraHardware
 import kotlinx.coroutines.launch
+import kotlin.reflect.KFunction0
 
 class NavigationDrawer : ComponentActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -69,6 +75,7 @@ class NavigationDrawer : ComponentActivity() {
 fun TopBar(
     navController: NavController,
     onNavigationIconClick: () -> Unit,
+
 ) {
     TopAppBar(
         title = {
@@ -88,13 +95,17 @@ fun TopBar(
     )
 }
 
+@OptIn(ExperimentalPermissionsApi::class)
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter", "CoroutineCreationDuringComposition")
 @Composable
 fun MainNavigatorScreen(context: Context) {
     val scaffoldState = rememberScaffoldState()
     val navController = rememberNavController()
     val scope = rememberCoroutineScope()
-
+    val permissionState = rememberPermissionState(permission = Manifest.permission.CAMERA)
+    fun updatePermitonState() {
+        permissionState.launchPermissionRequest()
+    }
     androidx.compose.material.Scaffold(
         scaffoldState = scaffoldState,
         topBar = {
@@ -105,17 +116,7 @@ fun MainNavigatorScreen(context: Context) {
                 },
             )
         },
-        /*floatingActionButton = {
-            // idea if for this floating button to launch the widget that will allow user to use camera to scan the word
-            FloatingActionButton(onClick = { /* ... */ }) {
-                Icon(
-                    imageVector = Icons.Default.Search,
-                    contentDescription = "Search",
-                )
-            }
-        },
-        floatingActionButtonPosition = androidx.compose.material.FabPosition.End,*/
-        bottomBar = { BottomBarNav(navController = navController,/* checkCameraHardware(context)*/) },
+        bottomBar = { BottomBarNav(navController = navController, ::updatePermitonState, permissionState) },
         drawerContent = {
             DrawerHeader()
             Spacer(modifier = Modifier.width(16.dp))
@@ -130,16 +131,14 @@ fun MainNavigatorScreen(context: Context) {
         drawerContentColor = MaterialTheme.colorScheme.background,
     ) {
         Row() {
-            NavGraph(navHostController = navController, startDestination = "home") {
-                // CustomSwithButton()
-
-            }
+            NavGraph(navHostController = navController, startDestination = "home", permissionState)
         }
     }
 }
 
+@OptIn(ExperimentalPermissionsApi::class)
 @Composable
-fun BottomBarNav(navController: NavHostController, isThereCamera: Boolean = true) {
+fun BottomBarNav(navController: NavHostController, updatePermition: KFunction0<Unit>, permition: PermissionState) {
     BottomNavigation(
         backgroundColor = MaterialTheme.colorScheme.surface,
         elevation = 4.dp,
@@ -156,19 +155,23 @@ fun BottomBarNav(navController: NavHostController, isThereCamera: Boolean = true
             },
             label = { Text("Home") },
         )
-        if (isThereCamera) {
-            BottomNavigationItem(
-                selected = navController.currentDestination?.route == "camera",
-                onClick = { navController.navigate("camera") },
-                icon = {
-                    Icon(
-                        imageVector = Icons.Default.Camera,
-                        contentDescription = "Camera",
-                    )
-                },
-                label = { Text("Image Search") },
-            )
-        }
+        BottomNavigationItem(
+            selected = navController.currentDestination?.route == "camera",
+            onClick = {
+                if (permition.hasPermission) {
+                    navController.navigate("camera")
+                } else {
+                    updatePermition()
+                }
+            },
+            icon = {
+                Icon(
+                    imageVector = Icons.Default.Camera,
+                    contentDescription = "Camera",
+                )
+            },
+            label = { Text("Image Search") },
+        )
     }
 }
 
