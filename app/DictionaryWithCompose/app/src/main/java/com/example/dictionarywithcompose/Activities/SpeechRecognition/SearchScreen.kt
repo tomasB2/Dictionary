@@ -2,7 +2,6 @@ package com.example.dictionarywithcompose.Activities.SpeechRecognition // ktlint
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -34,9 +33,7 @@ import com.example.dictionarywithcompose.Activities.SpeechRecognition.dataTypes.
 // ktlint-disable package-name
 
 @Composable
-fun SearchScreen(
-    buttonToAdd: @Composable () -> Unit = {},
-) {
+fun SearchScreen() {
     val viewModel = viewModel<SearchViewModel>()
     val uiState = viewModel.uiState.collectAsState().value
     val handleEvent: (String) -> Unit = {
@@ -44,9 +41,7 @@ fun SearchScreen(
     }
     val displayWord = viewModel.DisplayedWord.collectAsState().value
     Column() {
-        SearchBarVoiceSearch(modifier = Modifier, uiState = uiState, handleEvent = handleEvent) {
-            buttonToAdd()
-        }
+        SearchBarVoiceSearch(modifier = Modifier.align(Alignment.CenterHorizontally).fillMaxWidth(), uiState = uiState, handleEvent = handleEvent)
         SearchPageBody(modifier = Modifier) {
             LazyColumn(content = {
                 item {
@@ -76,18 +71,14 @@ fun SearchPageBody(modifier: Modifier, DisplayWord: @Composable () -> Unit) {
 }
 
 @Composable
-fun SearchBarVoiceSearch(modifier: Modifier, uiState: MainScreenState, handleEvent: (String) -> Unit, buttonToAdd: @Composable () -> Unit) {
+fun SearchBarVoiceSearch(modifier: Modifier, uiState: MainScreenState, handleEvent: (String) -> Unit) {
     Row(
         modifier
-            .padding(5.dp).background(color = MaterialTheme.colors.background),
+            .background(color = MaterialTheme.colors.background),
         horizontalArrangement = Arrangement.Center,
     ) {
         SearchBar(MainState = uiState, handleEvent = handleEvent) {
             ButtonForSpeech(handleEvent)
-        }
-        Spacer(modifier = Modifier.padding(5.dp))
-        Box(Modifier.fillMaxWidth()) {
-            buttonToAdd()
         }
     }
 }

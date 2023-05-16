@@ -22,17 +22,42 @@ class MyDatabaseHelper(context: Context) :
         private const val COLUMN_IS_LOGGED_IN = "is_logged_in"
         private const val COLUMN_USERNAME = "username"
         private const val COLUMN_PROFILE_IMAGE = "profile_image"
+        private const val COLUMN_LAST_IMAGE_RESULT = "img_text"
+        private const val LAST_IMAGE_TABLE_NAME = "last_image_table"
     }
 
     override fun onCreate(db: SQLiteDatabase?) {
         db?.execSQL("CREATE TABLE $LIST_TABLE_NAME ($COLUMN_LIST_ID INTEGER PRIMARY KEY AUTOINCREMENT, $COLUMN_LIST_STRING TEXT, $COLUMN_LIST_MEANING TEXT, $COLUMN_LIST_EXAMPLE TEXT)")
         db?.execSQL("CREATE TABLE $LOGIN_TABLE_NAME ($COLUMN_IS_LOGGED_IN INTEGER, $COLUMN_USERNAME TEXT, $COLUMN_PROFILE_IMAGE TEXT)")
+        db?.execSQL("CREATE TABLE $LAST_IMAGE_TABLE_NAME ($COLUMN_LAST_IMAGE_RESULT TEXT)")
     }
 
     override fun onUpgrade(db: SQLiteDatabase?, oldVersion: Int, newVersion: Int) {
         //
     }
-
+    fun insertLastImageResult(string: String) {
+        val db = this.writableDatabase
+        val values = ContentValues().apply {
+            put(COLUMN_LAST_IMAGE_RESULT, string)
+        }
+        db.insert(LAST_IMAGE_TABLE_NAME, null, values)
+        db.close()
+    }
+    fun getLastImageResult(): String {
+        val db = this.readableDatabase
+        val cursor = db.rawQuery("SELECT * FROM $LAST_IMAGE_TABLE_NAME", null)
+        var wordToReturn = ""
+        cursor.use {
+            if (it.moveToLast()) {
+                val index = it.getColumnIndex(COLUMN_LAST_IMAGE_RESULT)
+                if (index >= 0 && index <= it.columnCount) {
+                    wordToReturn = it.getString(index)
+                }
+            }
+        }
+        db.close()
+        return wordToReturn
+    }
     fun insertString(string: WordOnScreen) {
         val db = this.writableDatabase
         val values = ContentValues().apply {

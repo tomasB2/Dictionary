@@ -1,6 +1,6 @@
 package com.example.dictionarywithcompose.Activities.SelectionMenu // ktlint-disable package-name
 
-import android.Manifest
+import android.Manifest // ktlint-disable import-ordering
 import android.annotation.SuppressLint // ktlint-disable import-ordering
 import android.content.Context
 import android.os.Bundle
@@ -46,8 +46,8 @@ import androidx.navigation.compose.rememberNavController
 import com.example.dictionarywithcompose.Activities.ThemeRelated.ThemeConstructor
 import com.example.dictionarywithcompose.R
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
-import com.google.accompanist.permissions.PermissionState
-import com.google.accompanist.permissions.rememberPermissionState
+import com.google.accompanist.permissions.MultiplePermissionsState
+import com.google.accompanist.permissions.rememberMultiplePermissionsState
 // import com.example.dictionarywithcompose.Utils.checkCameraHardware
 import kotlinx.coroutines.launch
 import kotlin.reflect.KFunction0
@@ -58,7 +58,6 @@ class NavigationDrawer : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             ThemeConstructor {
-                // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background,
@@ -102,9 +101,13 @@ fun MainNavigatorScreen(context: Context) {
     val scaffoldState = rememberScaffoldState()
     val navController = rememberNavController()
     val scope = rememberCoroutineScope()
-    val permissionState = rememberPermissionState(permission = Manifest.permission.CAMERA)
+    val permissionsState = rememberMultiplePermissionsState(
+        listOf(
+            Manifest.permission.CAMERA,
+        ),
+    )
     fun updatePermitonState() {
-        permissionState.launchPermissionRequest()
+        permissionsState.launchMultiplePermissionRequest()
     }
     androidx.compose.material.Scaffold(
         scaffoldState = scaffoldState,
@@ -116,7 +119,7 @@ fun MainNavigatorScreen(context: Context) {
                 },
             )
         },
-        bottomBar = { BottomBarNav(navController = navController, ::updatePermitonState, permissionState) },
+        bottomBar = { BottomBarNav(navController = navController, ::updatePermitonState, permissionsState) },
         drawerContent = {
             DrawerHeader()
             Spacer(modifier = Modifier.width(16.dp))
@@ -131,14 +134,14 @@ fun MainNavigatorScreen(context: Context) {
         drawerContentColor = MaterialTheme.colorScheme.background,
     ) {
         Row() {
-            NavGraph(navHostController = navController, startDestination = "home", permissionState)
+            NavGraph(navHostController = navController, startDestination = "home", permissionsState)
         }
     }
 }
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
-fun BottomBarNav(navController: NavHostController, updatePermition: KFunction0<Unit>, permition: PermissionState) {
+fun BottomBarNav(navController: NavHostController, updatePermition: KFunction0<Unit>, permition: MultiplePermissionsState) {
     BottomNavigation(
         backgroundColor = MaterialTheme.colorScheme.surface,
         elevation = 4.dp,
@@ -158,7 +161,7 @@ fun BottomBarNav(navController: NavHostController, updatePermition: KFunction0<U
         BottomNavigationItem(
             selected = navController.currentDestination?.route == "camera",
             onClick = {
-                if (permition.hasPermission) {
+                if (permition.allPermissionsGranted) {
                     navController.navigate("camera")
                 } else {
                     updatePermition()
