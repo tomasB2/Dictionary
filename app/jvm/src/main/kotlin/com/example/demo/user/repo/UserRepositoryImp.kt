@@ -8,6 +8,7 @@ import com.example.demo.user.domain.User
 import com.example.demo.user.domain.UserImg
 import org.slf4j.LoggerFactory
 import java.sql.Connection
+import java.sql.Statement
 import java.util.*
 
 private const val THIRTY_DAYS: Long = (60 * 60 * 24) * 30
@@ -19,6 +20,26 @@ class UserRepositoryImp(
 
     private val logger = LoggerFactory.getLogger(this::class.java)
 
+    override fun getUserById(id: Int): Response<User?> {
+        logger.info("getUserById for: {}", id)
+        return try {
+            val stm = connection
+                .prepareStatement(UserQueris.getUserById)
+            stm.setInt(1, id)
+            val res = getInDataBase(
+                stm = stm,
+            )
+            if (!res.next()) {
+                Response(res = null, e = ErrorResponse(error = "User not found", cause = ErrorCause.USER_NOT_FOUND))
+            } else {
+                Response(res = userMapper.map(res), e = null)
+            }
+        } catch (e: Exception) {
+            logger.error("getUserById for: {}, e: {}", id, e.message)
+            throw e
+        }
+    }
+
     override fun getUserByName(name: String): Response<User?> {
         logger.info("getUserByName for: {}", name)
         return try {
@@ -29,7 +50,7 @@ class UserRepositoryImp(
                 stm = stm,
             )
             if (!res.next()) {
-                Response(res = null, e = ErrorResponse(message = "User not found", cause = ErrorCause.USER_NOT_FOUND))
+                Response(res = null, e = ErrorResponse(error = "User not found", cause = ErrorCause.USER_NOT_FOUND))
             } else {
                 Response(res = userMapper.map(res), e = null)
             }
@@ -49,7 +70,7 @@ class UserRepositoryImp(
                 stm = stm,
             )
             if (!res.next()) {
-                Response(res = null, e = ErrorResponse(message = "Email not found", cause = ErrorCause.EMAIL_NOT_FOUND))
+                Response(res = null, e = ErrorResponse(error = "Email not found", cause = ErrorCause.EMAIL_NOT_FOUND))
             } else {
                 Response(res = userMapper.map(res), e = null)
             }
@@ -69,7 +90,7 @@ class UserRepositoryImp(
                 stm = stm,
             )
             if (!res.next()) {
-                Response(res = null, e = ErrorResponse(message = "Token not found", cause = ErrorCause.TOKEN_NOT_FOUND))
+                Response(res = null, e = ErrorResponse(error = "Token not found", cause = ErrorCause.TOKEN_NOT_FOUND))
             } else {
                 Response(res = userMapper.map(res), e = null)
             }
@@ -100,15 +121,18 @@ class UserRepositoryImp(
         }
     }
 
-    override fun createUser(name: String, verify: String, email: String) {
+    override fun createUser(name: String, verify: String, email: String): Int {
         logger.info("createUser for: {}, {}, {}", name, verify, email)
         try {
             val stm = connection
-                .prepareStatement(UserQueris.createUser)
+                .prepareStatement(
+                    UserQueris.createUser,
+                    Statement.RETURN_GENERATED_KEYS,
+                )
             stm.setString(1, name)
             stm.setString(2, verify)
             stm.setString(3, email)
-            createInDataBase(
+            return createInDataBaseWithId(
                 stm = stm,
             )
         } catch (e: Exception) {
@@ -117,20 +141,20 @@ class UserRepositoryImp(
         }
     }
 
-    override fun editUser(oldName: String, user: User) {
-        logger.info("editUser for: {}, {}", oldName, user)
+    override fun editUser(id: Int, user: User) {
+        logger.info("editUser for: {}, {}", id, user)
         try {
             val stm = connection
                 .prepareStatement(UserQueris.updateUser)
             stm.setString(1, user.name)
             stm.setString(2, user.verify)
             stm.setString(3, user.email)
-            stm.setString(4, oldName)
+            stm.setInt(4, id)
             updateInDataBase(
                 stm = stm,
             )
         } catch (e: Exception) {
-            logger.error("editUser for: {}, {}, e: {}", oldName, user, e.message)
+            logger.error("editUser for: {}, {}, e: {}", id, user, e.message)
             throw e
         }
     }
@@ -139,7 +163,7 @@ class UserRepositoryImp(
         logger.info("getToken for: {}", name)
         return try {
             val stm = connection
-                .prepareStatement("select tokenString from tokens where user_id = ?")
+                .prepareStatement(UserQueris.getToken)
             stm.setString(1, name)
             val res = getInDataBase(
                 stm = stm,
@@ -164,7 +188,7 @@ class UserRepositoryImp(
             val res = getInDataBase(
                 stm = stm,
             )
-            if (!res.next()) Response(res = false, e = null)
+            if (!res.next()) return Response(res = false, e = null)
             val validity = res.getLong("validity")
             Response(res = validity > Date().toInstant().epochSecond, e = null)
         } catch (e: Exception) {
@@ -173,19 +197,19 @@ class UserRepositoryImp(
         }
     }
 
-    override fun createToken(name: String, token: String) {
-        logger.info("createToken for: {}, {}", name, token)
+    override fun createToken(id: Int, token: String) {
+        logger.info("createToken for: {}, {}", id, token)
         try {
             val stm = connection
                 .prepareStatement(UserQueris.createToken)
-            stm.setString(1, name)
+            stm.setInt(1, id)
             stm.setString(2, token)
             stm.setLong(3, Date().toInstant().plusSeconds(THIRTY_DAYS).epochSecond)
             updateInDataBase(
                 stm = stm,
             )
         } catch (e: Exception) {
-            logger.error("createToken for: {}, {}, e: {}", name, token, e.message)
+            logger.error("createToken for: {}, {}, e: {}", id, token, e.message)
             throw e
         }
     }
@@ -225,22 +249,22 @@ class UserRepositoryImp(
         }
     }
 
-    override fun getUserImage(name: String): Response<UserImg?> {
-        logger.info("getUserImage for: {}", name)
+    override fun getUserImage(id: Int): Response<UserImg?> {
+        logger.info("getUserImage for: {}", id)
         return try {
             val stm = connection
                 .prepareStatement(UserQueris.getUserImage)
-            stm.setString(1, name)
+            stm.setInt(1, id)
             val res = getInDataBase(
                 stm = stm,
             )
             if (!res.next()) {
-                Response(res = null, e = ErrorResponse(message = "User not found", cause = ErrorCause.USER_NOT_FOUND))
+                Response(res = null, e = ErrorResponse(error = "User not found", cause = ErrorCause.USER_NOT_FOUND))
             } else {
                 Response(res = userMapper.mapImg(res), e = null)
             }
         } catch (e: Exception) {
-            logger.error("getUserImage for: {}, e: {}", name, e.message)
+            logger.error("getUserImage for: {}, e: {}", id, e.message)
             throw e
         }
     }
@@ -250,7 +274,7 @@ class UserRepositoryImp(
         try {
             val stm = connection
                 .prepareStatement(UserQueris.putUserImage)
-            stm.setString(1, userImg.name)
+            stm.setInt(1, userImg.id)
             stm.setString(2, userImg.data)
             createInDataBase(
                 stm = stm,

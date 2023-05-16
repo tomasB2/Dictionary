@@ -1,7 +1,7 @@
 package com.example.demo.common.http.utils
 
-import com.example.demo.common.http.outputStructures.toErrorResponseOut
 import com.example.demo.common.domain.Response
+import com.example.demo.common.http.outputStructures.toErrorResponseOut
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 

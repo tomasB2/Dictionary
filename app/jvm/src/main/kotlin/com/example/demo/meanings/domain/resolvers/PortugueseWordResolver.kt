@@ -36,6 +36,7 @@ class PortugueseWordResolver : WordResolver {
         }
         meaningsList.add(Meaning(null, definitionsList))
         return WordInfo(
+            lang = "pt",
             word = rootNode[0]["word"].asText(),
             phonetic = null,
             meanings = meaningsList,

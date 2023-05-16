@@ -3,6 +3,7 @@ package com.example.demo.transaltions.domain
 @Suppress("unused")
 enum class Language(val code: String) {
     AUTO("auto"),
+
     AFRIKAANS("af"),
     ALBANIAN("sq"),
     AMHARIC("am"),

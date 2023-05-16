@@ -8,6 +8,7 @@ import com.example.demo.previousSearches.services.PreviousSearchServiceInterface
 import com.example.demo.user.service.UserServiceInterface
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestHeader
 import org.springframework.web.bind.annotation.RestController
 
 @Suppress("unused")
@@ -22,10 +23,11 @@ class MeaningController(
 
     @PostMapping(Uris.Word.GET_MEANING)
     fun findWord(
+        @RequestHeader("Authorization") token: String?,
         @RequestBody data: MeaningInput,
     ): Any {
         logger.info("MeaningController.findWord: {}", data)
-        val word = meaningServices.getMeaning(data.userToken, data.lang, data.word)
+        val word = meaningServices.getMeaning(token, data.lang, data.word)
         return responseGenerator(word, Uris.Word.GET_MEANING) {
             word.res
         }

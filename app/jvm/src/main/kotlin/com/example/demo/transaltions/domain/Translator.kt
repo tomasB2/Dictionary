@@ -24,7 +24,7 @@ object Translator {
     ): TranslationDAO {
         val translation: Translation = service.translate(text, Translate.TranslateOption.targetLanguage(target.code))
         return TranslationDAO(
-            sourceLanguage = source,
+            sourceLanguage = languageOf(translation.sourceLanguage) ?: Language.AUTO,
             sourceText = text,
             targetLanguage = target,
             targetText = translation.translatedText,

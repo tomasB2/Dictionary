@@ -3,7 +3,6 @@ package com.example.demo.user
 import com.example.demo.common.http.utils.Uris
 import com.example.demo.common.http.utils.removeBearer
 import com.example.demo.common.http.utils.responseGenerator
-import com.example.demo.user.domain.User
 import com.example.demo.user.domain.inputs.LoginInput
 import com.example.demo.user.domain.inputs.UserInput
 import com.example.demo.user.domain.outpus.toUserOut
@@ -71,19 +70,19 @@ class UserController(
         logger.info("createUserHandler for: {}", data.name)
         val resp = userServices.create(data.name, data.email, data.password)
         return responseGenerator(resp, Uris.Users.CREATE) {
-            resp.res.toUserOut()
+            resp.res?.toUserOut()
         }
     }
 
     @PostMapping(Uris.Users.EDIT)
     fun editUserHandler(
-        user: User,
+        @RequestHeader("Authorization") token: String,
         @RequestBody data: UserInput,
     ): Any {
-        logger.info("editUserHandler for: {}", user.name)
-        val resp = userServices.updateUser(user.name, data.name, data.email, data.password)
+        logger.info("editUserHandler for: {}", token)
+        val resp = userServices.updateUser(token, data.name, data.email, data.password)
         return responseGenerator(resp, Uris.Users.EDIT) {
-            resp.res.toUserOut()
+            resp.res?.toUserOut()
         }
     }
 
