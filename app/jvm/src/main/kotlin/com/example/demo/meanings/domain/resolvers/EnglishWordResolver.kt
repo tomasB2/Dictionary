@@ -70,6 +70,7 @@ class EnglishWordResolver : WordResolver {
             meaningsList.add(meaning)
         }
         val wordInfo = WordInfo(
+            lang = "en",
             word = rootNode[0]["word"].asText(),
             phonetic = rootNode[0]["phonetics"][1]["text"].asText(),
             meanings = meaningsList,

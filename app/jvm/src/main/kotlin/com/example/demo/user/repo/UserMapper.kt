@@ -10,6 +10,7 @@ import java.sql.ResultSet
 class UserMapper {
     fun map(rs: ResultSet): User {
         return User(
+            id = rs.getInt("id"),
             name = rs.getString("name"),
             verify = rs.getString("password_verification"),
             email = rs.getString("email"),
@@ -18,7 +19,7 @@ class UserMapper {
 
     fun mapImg(rs: ResultSet): UserImg {
         return UserImg(
-            name = rs.getString("name"),
+            id = rs.getInt("name_id"),
             data = rs.getString("data"),
         )
     }

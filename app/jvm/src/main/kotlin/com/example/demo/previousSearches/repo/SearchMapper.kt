@@ -5,12 +5,13 @@ import com.example.demo.meanings.domain.model.wordInfoFromJson
 import java.sql.ResultSet
 
 class SearchMapper {
-    fun map(rs: ResultSet): WordInfo {
+    fun map(rs: ResultSet): WordInfo? {
+        println(rs.getString("searches_json"))
         return wordInfoFromJson(rs.getString("searches_json"))
     }
 
-    fun mapMany(rs: ResultSet): List<WordInfo> {
-        val res = mutableListOf<WordInfo>()
+    fun mapMany(rs: ResultSet): List<WordInfo?> {
+        val res = mutableListOf<WordInfo?>()
         while (rs.next()) {
             res.add(map(rs))
         }

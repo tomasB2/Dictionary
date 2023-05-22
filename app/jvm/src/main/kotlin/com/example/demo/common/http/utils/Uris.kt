@@ -15,10 +15,12 @@ object Uris {
     }
 
     object Friends {
-        private const val prefix = "$ROOT/friends"
+        private const val prefix = "$ROOT/users/friends"
         const val GET_FRIENDS = "$prefix/{name}"
-        const val ADD_FRIEND = prefix
-        const val REMOVE_FRIEND = prefix
+        const val ADD_FRIEND = "$prefix/{name}"
+        const val REMOVE_FRIEND = "$prefix/{name}"
+        const val ACC_FRIEND = "$prefix/accept/{name}"
+        const val DEC_FRIEND = "$prefix/decline/{name}"
     }
 
     object PreviousSearches {

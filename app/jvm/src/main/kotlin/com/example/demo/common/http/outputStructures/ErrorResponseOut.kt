@@ -13,6 +13,6 @@ fun ErrorResponse.toErrorResponseOut(path: String) =
     com.example.demo.common.http.outputStructures.ErrorResponseOut(
         timestamp = timestamp.toString(),
         status = this.cause.toHttpStatus().value(),
-        error = this.message ?: "Unexpected Error",
+        error = this.error ?: "Unexpected Error",
         path = path,
     )

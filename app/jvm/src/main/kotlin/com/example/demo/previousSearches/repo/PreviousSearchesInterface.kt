@@ -4,8 +4,11 @@ import com.example.demo.common.domain.Response
 import com.example.demo.meanings.domain.model.WordInfo
 
 interface PreviousSearchesInterface {
-    fun getPreviousSearches(userName: String): Response<List<WordInfo>>
-    fun addPreviousSearch(userName: String, searchKey: String, search: WordInfo)
-    fun deletePreviousSearch(userName: String, searchKey: String)
-    fun deleteAllPreviousSearches(userName: String)
+
+    fun wordExistsInUser(userId: Int, searchKey: String): Response<Boolean>
+    fun getPreviousSearch(searchKey: String): Response<WordInfo?>
+    fun getPreviousSearches(userId: Int): Response<List<WordInfo?>?>
+    fun addPreviousSearch(userId: Int, searchKey: String, search: WordInfo)
+    fun deletePreviousSearch(userId: Int, searchKey: String)
+    fun deleteAllPreviousSearches(userId: Int)
 }

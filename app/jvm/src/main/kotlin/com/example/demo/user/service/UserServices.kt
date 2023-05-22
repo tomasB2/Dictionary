@@ -4,7 +4,9 @@ import com.example.demo.common.domain.ErrorCause
 import com.example.demo.common.domain.ErrorResponse
 import com.example.demo.common.domain.Response
 import com.example.demo.common.repository.implementations.TransactionManagerImp
-import com.example.demo.common.utils.encodeString
+import com.example.demo.common.repository.utils.getInDataBase
+import com.example.demo.common.utils.* // ktlint-disable no-wildcard-imports
+import com.example.demo.friends.Friends
 import com.example.demo.user.domain.LogInInfo
 import com.example.demo.user.domain.User
 import com.example.demo.user.domain.UserImg
@@ -22,7 +24,9 @@ class UserServices : UserServiceInterface {
         logger.info("getUser for: {}", name)
         return try {
             TransactionManagerImp.run {
-                it.usersRepository.getUserByName(name)
+                val res = it.usersRepository.getUserByName(name)
+                logger.info(res.res.toString())
+                res
             }
         } catch (e: Exception) {
             logger.error("getUser for: {}, e: {}", name, e.message)
@@ -54,17 +58,26 @@ class UserServices : UserServiceInterface {
         }
     }
 
-    override fun create(username: String, email: String, password: String): Response<User> {
+    override fun create(username: String, email: String, password: String): Response<User?> {
         logger.info("create for: {}, {}, {}", username, email, password)
+        password.isValidPassword()
         return try {
             TransactionManagerImp.run {
+                if (it.usersRepository.getUserByName(username).res != null) {
+                    return@run Response(res = null, e = ErrorResponse(error = "Username already taken", cause = ErrorCause.USERNAME_TAKEN))
+                }
+                if (it.usersRepository.getUserByEmail(email).res != null) {
+                    return@run Response(res = null, e = ErrorResponse(error = "Email already taken", cause = ErrorCause.EMAIL_TAKEN))
+                }
                 val verify = encodeString(password)
-                it.usersRepository.createUser(username, verify, email)
+                val id = it.usersRepository.createUser(username, verify, email)
                 val user = User(
+                    id = id,
                     name = username,
                     email = email,
                     verify = verify,
                 )
+                it.friendsRepository.createFriendsList(user.id, Friends(mutableListOf<String>()))
                 Response(res = user, e = null)
             }
         } catch (e: Exception) {
@@ -73,20 +86,27 @@ class UserServices : UserServiceInterface {
         }
     }
 
-    override fun updateUser(oldName: String, name: String, email: String, newPw: String): Response<User> {
-        logger.info("updateUser for: {}, {}, {}, {}", oldName, name, email, newPw)
+    override fun updateUser(token: String, name: String, email: String, newPw: String): Response<User?> {
+        logger.info("updateUser for: {}, {}, {}, {}", token, name, email, newPw)
         return try {
+            name.isValidName()
+            email.isValidEmail()
+            newPw.isValidPassword()
             TransactionManagerImp.run {
+                val user = authenticate(token, it)
+                if (user.res == null) return@run user
+                val id = user.res.id
                 val newUser = User(
+                    id = id,
                     name = name,
                     email = email,
                     verify = encodeString(newPw),
                 )
-                it.usersRepository.editUser(oldName, newUser)
+                it.usersRepository.editUser(id, newUser)
                 Response(res = newUser, e = null)
             }
         } catch (e: Exception) {
-            logger.error("Error updating user: {}, e: {}", oldName, e.message)
+            logger.error("Error updating user: {}, e: {}", token, e.message)
             throw e
         }
     }
@@ -100,7 +120,7 @@ class UserServices : UserServiceInterface {
                     return@run Response(res = false, e = res.e)
                 }
                 if (!res.res) {
-                    return@run Response(res = false, e = ErrorResponse(message = "Token is not valid", cause = ErrorCause.INVALID_TOKEN))
+                    return@run Response(res = false, e = ErrorResponse(error = "Token is not valid", cause = ErrorCause.INVALID_TOKEN))
                 }
                 Response(res = true, e = null)
             }
@@ -116,7 +136,7 @@ class UserServices : UserServiceInterface {
         return try {
             TransactionManagerImp.run {
                 if (username == null && email == null) {
-                    return@run Response(null, ErrorResponse(message = "Username or email is required", cause = ErrorCause.USER_BAD_REQUEST))
+                    return@run Response(null, ErrorResponse(error = "Username or email is required", cause = ErrorCause.USER_BAD_REQUEST))
                 }
                 val user = if (username != null) {
                     it.usersRepository.getUserByName(username)
@@ -126,14 +146,14 @@ class UserServices : UserServiceInterface {
                     throw Error("This should never happen")
                 }
                 if (!user.isSuccessful) {
-                    return@run Response(null, user.e)
+                    return@run Response(null, ErrorResponse(error = "Invalid username or password", cause = ErrorCause.USER_UNAUTHORIZED))
                 }
                 if (user.res?.verify == verify) {
                     val token = UUID.randomUUID().toString()
-                    it.usersRepository.createToken(user.res.name, token)
+                    it.usersRepository.createToken(user.res.id, token)
                     Response(LogInInfo(name = user.res.name, token = token), null)
                 } else {
-                    Response(null, ErrorResponse(message = "Invalid password", cause = ErrorCause.WRONG_PASSWORD))
+                    Response(null, ErrorResponse(error = "Invalid username or password", cause = ErrorCause.WRONG_PASSWORD))
                 }
             }
         } catch (e: Exception) {
@@ -159,25 +179,25 @@ class UserServices : UserServiceInterface {
     }
 
     override fun putUserImage(userImg: UserImg) {
-        logger.info("putUserImage for: {}", userImg.name)
+        logger.info("putUserImage for: {}", userImg.id)
         return try {
             TransactionManagerImp.run {
                 it.usersRepository.putUserImage(userImg)
             }
         } catch (e: Exception) {
-            logger.error("Error putting user image: {}, e: {}", userImg.name, e.message)
+            logger.error("Error putting user image: {}, e: {}", userImg.id, e.message)
             throw e
         }
     }
 
-    override fun getUserImage(name: String): Response<UserImg?> {
-        logger.info("getUserImage for: {}", name)
+    override fun getUserImage(id: Int): Response<UserImg?> {
+        logger.info("getUserImage for: {}", id)
         return try {
             TransactionManagerImp.run {
-                it.usersRepository.getUserImage(name)
+                it.usersRepository.getUserImage(id)
             }
         } catch (e: Exception) {
-            logger.error("Error getting user image: {}, e: {}", name, e.message)
+            logger.error("Error getting user image: {}, e: {}", id, e.message)
             throw e
         }
     }
