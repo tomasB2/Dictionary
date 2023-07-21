@@ -24,7 +24,12 @@ enum class ErrorCause {
     USER_NOT_ADDED,
     USER_ALREADY_ADDED,
     USER_ALREADY_REQUESTED,
-    ;
+    CHAT_NOT_FOUND,
+    USER_NOT_IN_CHAT,
+    MESSAGE_NOT_FOUND,
+    MESSAGE_NOT_IN_CHAT,
+    USER_ALREADY_IN_CHAT,
+    OAUTH_USER;
 
     fun toHttpStatus() = when (this) {
         USER_NOT_FOUND -> HttpStatus.NOT_FOUND
@@ -48,5 +53,11 @@ enum class ErrorCause {
         USER_NOT_ADDED -> HttpStatus.BAD_REQUEST
         USER_ALREADY_ADDED -> HttpStatus.BAD_REQUEST
         USER_ALREADY_REQUESTED -> HttpStatus.BAD_REQUEST
+        CHAT_NOT_FOUND -> HttpStatus.NOT_FOUND
+        USER_NOT_IN_CHAT -> HttpStatus.UNAUTHORIZED
+        MESSAGE_NOT_FOUND -> HttpStatus.NOT_FOUND
+        MESSAGE_NOT_IN_CHAT -> HttpStatus.BAD_REQUEST
+        USER_ALREADY_IN_CHAT -> HttpStatus.BAD_REQUEST
+        OAUTH_USER -> HttpStatus.BAD_REQUEST
     }
 }

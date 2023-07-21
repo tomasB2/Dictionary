@@ -6,14 +6,15 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 
 fun <R> responseGenerator(resp: Response<*>, path: String, processOutput: () -> R): ResponseEntity<*> {
-    if (resp.e != null) {
-        return ResponseEntity(
+    return if (resp.e != null) {
+        ResponseEntity(
             resp.e.toErrorResponseOut(path),
             resp.e.cause.toHttpStatus(),
         )
+    } else {
+        ResponseEntity(
+            processOutput(),
+            HttpStatus.OK,
+        )
     }
-    return ResponseEntity(
-        processOutput(),
-        HttpStatus.OK,
-    )
 }

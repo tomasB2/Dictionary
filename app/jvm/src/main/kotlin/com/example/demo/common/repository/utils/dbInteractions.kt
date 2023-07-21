@@ -29,7 +29,7 @@ fun deleteInDataBase(stm: PreparedStatement) = stm.executeUpdate()
 
 fun getInDataBase(stm: PreparedStatement): ResultSet {
     val rs = stm.executeQuery()
-    return rs ?: throw ServerError(
+    return rs ?: throw com.example.demo.common.domain.errors.ServerError(
         message = "An error occurred within the database",
         cause = null,
     )

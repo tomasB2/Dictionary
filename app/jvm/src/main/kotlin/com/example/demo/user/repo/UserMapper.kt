@@ -1,5 +1,6 @@
 package com.example.demo.user.repo
 
+import com.example.demo.user.domain.Types
 import com.example.demo.user.domain.User
 import com.example.demo.user.domain.UserImg
 import java.sql.ResultSet
@@ -14,6 +15,7 @@ class UserMapper {
             name = rs.getString("name"),
             verify = rs.getString("password_verification"),
             email = rs.getString("email"),
+            type = Types.fromBoolean(rs.getBoolean("types")),
         )
     }
 

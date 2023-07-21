@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration>
+    <Appenders>
+        <Console name="STDOUT">
+            <PatternLayout pattern="%m MDC%X%n"/>
+        </Console>
+        <SMTP name="ErrorMail" subject="Error Log" to="dicionariointeligente@gmail.com" from="${env:SMTP_FROM}"
+              smtpHost="smtp.gmail.com" smtpPort="465" bufferSize="1" smtpUsername="${env:SMTP_FROM}"
+            smtpPassword="${env:SMTP_PASS}" smtpProtocol="smtps" ignoreExceptions="false">
+            <ThresholdFilter level="error" onMatch="ACCEPT" onMismatch="DENY"/>
+        </SMTP>
+        <RollingFile name="File" fileName="dictionary-log4j2.log"
+            filePattern="%d{yyyyMMdd}.dictionary-log4j2.%i.log">
+            <PatternLayout>
+                <pattern>%d %p %C{1.} [%t] %m%n</pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy />
+                <SizeBasedTriggeringPolicy size="250 MB"/>
+            </Policies>
+            <ThresholdFilter level="info" onMatch="ACCEPT" onMismatch="DENY" />
+        </RollingFile>
+    </Appenders>
+
+    <Loggers>
+        <Logger name="com.example.demo.user.UserController" level="trace">
+            <AppenderRef ref="File"/>
+        </Logger>
+        <Logger name="com.example.demo.user.service.UserServices" level="trace">
+            <AppenderRef ref="File"/>
+        </Logger>
+        <Logger name="com.example.demo.user.repo.UserRepositoryImp" level="trace">
+            <AppenderRef ref="File"/>
+        </Logger>
+        <Logger name="com.example.demo.transaltions.TranslationController" level="trace">
+            <AppenderRef ref="File"/>
+        </Logger>
+        <Logger name="com.example.demo.transaltions.service.TranslationService" level="trace">
+            <AppenderRef ref="File"/>
+        </Logger>
+        <Logger name="com.example.demo.previousSearches.PreviousSearchesController" level="trace">
+            <AppenderRef ref="File"/>
+        </Logger>
+        <Logger name="com.example.demo.previousSearches.services.PreviousSearchServiceImp" level="trace">
+            <AppenderRef ref="File"/>
+        </Logger>
+        <Logger name="com.example.demo.previousSearches.repo.PreviousSearchesImp" level="trace">
+            <AppenderRef ref="File"/>
+        </Logger>
+        <Logger name="com.example.demo.meanings.MeaningController" level="trace">
+            <AppenderRef ref="File"/>
+        </Logger>
+        <Logger name="com.example.demo.meanings.service.MeaningService" level="trace">
+            <AppenderRef ref="File"/>
+        </Logger>
+        <Logger name="com.example.demo.friends.FriendsController" level="trace">
+            <AppenderRef ref="File"/>
+        </Logger>
+        <Logger name="com.example.demo.friends.service.FriendsService" level="trace">
+            <AppenderRef ref="File"/>
+        </Logger>
+        <Logger name="com.example.demo.friends.repo.FriendsRepoSql" level="trace">
+            <AppenderRef ref="File"/>
+        </Logger>
+        <Root level="info">
+            <AppenderRef ref="STDOUT"/>
+            <AppenderRef ref="ErrorMail"/>
+        </Root>
+    </Loggers>
+</Configuration>

@@ -4,6 +4,8 @@ import com.example.demo.common.domain.ErrorCause
 import com.example.demo.common.domain.ErrorResponse
 import com.example.demo.common.domain.Response
 import com.example.demo.common.repository.utils.* // ktlint-disable no-wildcard-imports
+import com.example.demo.user.domain.Types
+import com.example.demo.user.domain.Types.Companion.toBoolean
 import com.example.demo.user.domain.User
 import com.example.demo.user.domain.UserImg
 import org.slf4j.LoggerFactory
@@ -121,7 +123,7 @@ class UserRepositoryImp(
         }
     }
 
-    override fun createUser(name: String, verify: String, email: String): Int {
+    override fun createUser(name: String, verify: String, email: String, type: Types): Int {
         logger.info("createUser for: {}, {}, {}", name, verify, email)
         try {
             val stm = connection
@@ -132,6 +134,7 @@ class UserRepositoryImp(
             stm.setString(1, name)
             stm.setString(2, verify)
             stm.setString(3, email)
+            stm.setBoolean(4, type.toBoolean())
             return createInDataBaseWithId(
                 stm = stm,
             )

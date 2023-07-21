@@ -6,10 +6,7 @@ import com.example.demo.meanings.domain.model.inputs.MeaningInput
 import com.example.demo.meanings.service.MeaningServiceInterface
 import com.example.demo.previousSearches.services.PreviousSearchServiceInterface
 import com.example.demo.user.service.UserServiceInterface
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestHeader
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 
 @Suppress("unused")
 @RestController
@@ -32,4 +29,14 @@ class MeaningController(
             word.res
         }
     }
+
+    /*
+    @GetMapping(Uris.Word.GET_VALID_LANGUAGES)
+    fun findWord(): Any {
+        logger.info("MeaningController.findWord")
+        val lang = meaningServices.getValidLanguages()
+        return responseGenerator(lang, Uris.Word.GET_VALID_LANGUAGES) {
+            lang.res
+        }
+    }*/
 }

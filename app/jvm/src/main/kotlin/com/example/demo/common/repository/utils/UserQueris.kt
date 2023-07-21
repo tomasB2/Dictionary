@@ -14,7 +14,7 @@ object UserQueris {
 
     val getListOfUsers = "select * from users limit ? offset ?"
 
-    val createUser = "insert into users(name, password_verification, email) values(?, ?, ?)"
+    val createUser = "insert into users(name, password_verification, email, types) values(?, ?, ?, ?)"
 
     val deleteUser = "delete from users where name = ?"
 

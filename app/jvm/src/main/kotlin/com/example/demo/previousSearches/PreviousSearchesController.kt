@@ -1,5 +1,6 @@
 package com.example.demo.previousSearches
 
+import com.example.demo.common.http.outputStructures.toBooleanOut
 import com.example.demo.common.http.utils.Uris
 import com.example.demo.common.http.utils.responseGenerator
 import com.example.demo.previousSearches.services.PreviousSearchServiceInterface
@@ -28,7 +29,7 @@ class PreviousSearchesController(
     ): ResponseEntity<*> {
         val resp = previousSearchesInterface.deletePreviousSearch(token, searchKey = word)
         return responseGenerator(resp, Uris.PreviousSearches.GET_PREVIOUS_SEARCHES) {
-            resp.res
+            resp.res.toBooleanOut()
         }
     }
 
@@ -38,7 +39,7 @@ class PreviousSearchesController(
     ): ResponseEntity<*> {
         val resp = previousSearchesInterface.deleteAllPreviousSearches(token)
         return responseGenerator(resp, Uris.PreviousSearches.GET_PREVIOUS_SEARCHES) {
-            resp.res
+            resp.res.toBooleanOut()
         }
     }
 }

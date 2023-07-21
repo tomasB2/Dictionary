@@ -4,10 +4,10 @@ import com.example.demo.common.domain.ErrorCause
 import com.example.demo.common.domain.ErrorResponse
 import com.example.demo.common.domain.Response
 import com.example.demo.common.repository.implementations.TransactionManagerImp
-import com.example.demo.common.repository.utils.getInDataBase
 import com.example.demo.common.utils.* // ktlint-disable no-wildcard-imports
 import com.example.demo.friends.Friends
 import com.example.demo.user.domain.LogInInfo
+import com.example.demo.user.domain.Types
 import com.example.demo.user.domain.User
 import com.example.demo.user.domain.UserImg
 import org.slf4j.LoggerFactory
@@ -24,9 +24,7 @@ class UserServices : UserServiceInterface {
         logger.info("getUser for: {}", name)
         return try {
             TransactionManagerImp.run {
-                val res = it.usersRepository.getUserByName(name)
-                logger.info(res.res.toString())
-                res
+                it.usersRepository.getUserByName(name)
             }
         } catch (e: Exception) {
             logger.error("getUser for: {}, e: {}", name, e.message)
@@ -70,12 +68,41 @@ class UserServices : UserServiceInterface {
                     return@run Response(res = null, e = ErrorResponse(error = "Email already taken", cause = ErrorCause.EMAIL_TAKEN))
                 }
                 val verify = encodeString(password)
-                val id = it.usersRepository.createUser(username, verify, email)
+                val id = it.usersRepository.createUser(username, verify, email, Types.NORMAL)
                 val user = User(
                     id = id,
                     name = username,
                     email = email,
                     verify = verify,
+                    type = Types.NORMAL,
+                )
+                it.friendsRepository.createFriendsList(user.id, Friends(mutableListOf<String>()))
+                Response(res = user, e = null)
+            }
+        } catch (e: Exception) {
+            logger.error("Error creating user: {}, e: {}", username, e.message)
+            throw e
+        }
+    }
+
+    override fun createWithGoogle(username: String, email: String): Response<User?> {
+        logger.info("create with google for: {}, {}", username, email)
+        return try {
+            TransactionManagerImp.run {
+                if (it.usersRepository.getUserByName(username).res != null) {
+                    return@run Response(res = null, e = ErrorResponse(error = "Username already taken", cause = ErrorCause.USERNAME_TAKEN))
+                }
+                if (it.usersRepository.getUserByEmail(email).res != null) {
+                    return@run Response(res = null, e = ErrorResponse(error = "Email already taken", cause = ErrorCause.EMAIL_TAKEN))
+                }
+                val verify = encodeString("")
+                val id = it.usersRepository.createUser(username, verify, email, Types.OAUTH)
+                val user = User(
+                    id = id,
+                    name = username,
+                    email = email,
+                    verify = verify,
+                    type = Types.OAUTH,
                 )
                 it.friendsRepository.createFriendsList(user.id, Friends(mutableListOf<String>()))
                 Response(res = user, e = null)
@@ -95,12 +122,16 @@ class UserServices : UserServiceInterface {
             TransactionManagerImp.run {
                 val user = authenticate(token, it)
                 if (user.res == null) return@run user
+                if (user.res.type == Types.OAUTH) {
+                    return@run Response(res = null, e = ErrorResponse(error = "Cannot change oauth user", cause = ErrorCause.OAUTH_USER))
+                }
                 val id = user.res.id
                 val newUser = User(
                     id = id,
                     name = name,
                     email = email,
                     verify = encodeString(newPw),
+                    type = user.res.type,
                 )
                 it.usersRepository.editUser(id, newUser)
                 Response(res = newUser, e = null)
@@ -148,7 +179,32 @@ class UserServices : UserServiceInterface {
                 if (!user.isSuccessful) {
                     return@run Response(null, ErrorResponse(error = "Invalid username or password", cause = ErrorCause.USER_UNAUTHORIZED))
                 }
+                if (user.res?.type == Types.OAUTH) {
+                    return@run Response(res = null, e = ErrorResponse(error = "Login trough google", cause = ErrorCause.OAUTH_USER))
+                }
                 if (user.res?.verify == verify) {
+                    val token = UUID.randomUUID().toString()
+                    it.usersRepository.createToken(user.res.id, token)
+                    Response(LogInInfo(name = user.res.name, token = token), null)
+                } else {
+                    Response(null, ErrorResponse(error = "Invalid username or password", cause = ErrorCause.WRONG_PASSWORD))
+                }
+            }
+        } catch (e: Exception) {
+            logger.error("Error logging in: {}, e: {}", username, e.message)
+            throw e
+        }
+    }
+
+    override fun loginWithGoogle(username: String, email: String): Response<LogInInfo?> {
+        logger.info("login with google for: {}, {}", username, email)
+        return try {
+            TransactionManagerImp.run {
+                val user = it.usersRepository.getUserByName(username)
+                if (!user.isSuccessful) {
+                    return@run Response(null, ErrorResponse(error = "Invalid username or password", cause = ErrorCause.USER_UNAUTHORIZED))
+                }
+                if (user.res != null) {
                     val token = UUID.randomUUID().toString()
                     it.usersRepository.createToken(user.res.id, token)
                     Response(LogInInfo(name = user.res.name, token = token), null)

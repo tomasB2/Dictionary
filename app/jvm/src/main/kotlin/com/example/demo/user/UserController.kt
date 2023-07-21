@@ -1,5 +1,6 @@
 package com.example.demo.user
 
+import com.example.demo.common.http.outputStructures.toBooleanOut
 import com.example.demo.common.http.utils.Uris
 import com.example.demo.common.http.utils.removeBearer
 import com.example.demo.common.http.utils.responseGenerator
@@ -59,7 +60,7 @@ class UserController(
         logger.info("logoutHandler for: {}", token)
         val resp = userServices.logout(removeBearer(token))
         return responseGenerator(resp, Uris.Users.LOGOUT) {
-            resp.res
+            resp.res.toBooleanOut()
         }
     }
 
@@ -93,7 +94,7 @@ class UserController(
         logger.info("checkTokenHandler for: {}", token)
         val resp = userServices.checkToken(removeBearer(token))
         return responseGenerator(resp, Uris.Users.TOKEN) {
-            resp.res
+            resp.res.toBooleanOut()
         }
     }
 }

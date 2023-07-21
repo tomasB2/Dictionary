@@ -1,6 +1,7 @@
 package com.example.demo.user.repo
 
 import com.example.demo.common.domain.Response
+import com.example.demo.user.domain.Types
 import com.example.demo.user.domain.User
 import com.example.demo.user.domain.UserImg
 
@@ -10,7 +11,7 @@ interface UserRepositoryInterface {
     fun getUserByEmail(email: String): Response<User?>
     fun getUserByToken(token: String): Response<User?>
     fun getListOfUsers(limit: Int, offset: Int): Response<List<User>>
-    fun createUser(name: String, verify: String, email: String): Int
+    fun createUser(name: String, verify: String, email: String, type: Types): Int
     fun editUser(id: Int, user: User)
     fun getToken(name: String): Response<String?>
     fun checkTokenValidity(token: String): Response<Boolean>

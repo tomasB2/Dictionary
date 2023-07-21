@@ -1,5 +1,7 @@
 package com.example.demo.common.repository.implementations
 
+import com.example.demo.chatRooms.repo.ChatRoomRepoInterface
+import com.example.demo.chatRooms.repo.ChatRoomRepoSql
 import com.example.demo.common.repository.Transaction
 import com.example.demo.friends.repo.FriendsMapper
 import com.example.demo.friends.repo.FriendsRepoInterface
@@ -24,6 +26,8 @@ class TransactionImp(
 
     private val friendsMapper = FriendsMapper()
     override val friendsRepository: FriendsRepoInterface by lazy { FriendsRepoSql(connection, friendsMapper) }
+
+    override val roomsRepository: ChatRoomRepoInterface by lazy { ChatRoomRepoSql(connection) }
     override fun rollback() {
         connection.rollback()
         throw com.example.demo.common.domain.errors.ServerError(message = "Transaction roll back", cause = null)

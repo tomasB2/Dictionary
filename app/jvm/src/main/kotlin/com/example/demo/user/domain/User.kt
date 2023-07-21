@@ -8,6 +8,7 @@ data class User(
     val name: String,
     val verify: String,
     val email: String,
+    val type: Types
 ) {
     init {
         require(name.isValidName()) { "Name must be contain 5-16 characters and no special characters" }

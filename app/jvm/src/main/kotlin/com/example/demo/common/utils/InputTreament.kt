@@ -34,10 +34,10 @@ fun String.isValidPassword(): Boolean {
         if (this.contains(Regex("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)[a-zA-Z\\d]{8,16}\$"))) {
             return true
         } else {
-            throw IllegalArgumentException("Password must be contain 8-16 characters, at least one uppercase letter, one lowercase letter ane one number")
+            throw IllegalArgumentException("Password must contain 8-16 characters, at least one uppercase letter, one lowercase letter ane one number")
         }
     } else {
-        throw IllegalArgumentException("Password must be contain 8-16 characters, at least one uppercase letter, one lowercase letter ane one number")
+        throw IllegalArgumentException("Password must contain 8-16 characters, at least one uppercase letter, one lowercase letter ane one number")
     }
 }
 

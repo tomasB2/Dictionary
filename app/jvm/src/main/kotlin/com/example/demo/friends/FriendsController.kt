@@ -1,5 +1,6 @@
 package com.example.demo.friends
 
+import com.example.demo.common.http.outputStructures.toBooleanOut
 import com.example.demo.common.http.utils.Uris
 import com.example.demo.common.http.utils.responseGenerator
 import com.example.demo.friends.service.FriendsServiceInterface
@@ -26,6 +27,17 @@ class FriendsController(
         }
     }
 
+    @GetMapping(Uris.Requests.GET_REQUESTS)
+    fun getRequests(
+        @RequestHeader("Authorization") token: String,
+    ): Any {
+        logger.info("getFriends for: {}", token)
+        val resp = friendsService.getFriendRequests(token)
+        return responseGenerator(resp, Uris.removeInputBraces(Uris.Users.GET_BY_NAME)) {
+            resp.res?.map { it.toUserOut() }
+        }
+    }
+
     @PutMapping(Uris.Friends.ADD_FRIEND)
     fun addFriend(
         @RequestHeader("Authorization") token: String,
@@ -34,11 +46,11 @@ class FriendsController(
         logger.info("addFriend for: {}", name)
         val resp = friendsService.addFriend(token, name)
         return responseGenerator(resp, Uris.removeInputBraces(Uris.Users.GET_BY_NAME)) {
-            resp.res
+            resp.res.toBooleanOut()
         }
     }
 
-    @PutMapping(Uris.Friends.ACC_FRIEND)
+    @PutMapping(Uris.Requests.ACC_FRIEND)
     fun accFriendRequest(
         @RequestHeader("Authorization") token: String,
         @PathVariable name: String,
@@ -46,11 +58,11 @@ class FriendsController(
         logger.info("addFriend for: {}", name)
         val resp = friendsService.acceptFriendRequest(token, name)
         return responseGenerator(resp, Uris.removeInputBraces(Uris.Users.GET_BY_NAME)) {
-            resp.res
+            resp.res.toBooleanOut()
         }
     }
 
-    @PutMapping(Uris.Friends.DEC_FRIEND)
+    @PostMapping(Uris.Requests.DEC_FRIEND)
     fun decFriendRequest(
         @RequestHeader("Authorization") token: String,
         @PathVariable name: String,
@@ -58,7 +70,7 @@ class FriendsController(
         logger.info("addFriend for: {}", name)
         val resp = friendsService.declineFriendRequest(token, name)
         return responseGenerator(resp, Uris.removeInputBraces(Uris.Users.GET_BY_NAME)) {
-            resp.res
+            resp.res.toBooleanOut()
         }
     }
 
@@ -70,7 +82,7 @@ class FriendsController(
         logger.info("removeFriend for: {}", name)
         val resp = friendsService.removeFriend(token, name)
         return responseGenerator(resp, Uris.removeInputBraces(Uris.Users.GET_BY_NAME)) {
-            resp.res
+            resp.res.toBooleanOut()
         }
     }
 }

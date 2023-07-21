@@ -10,11 +10,12 @@ interface UserServiceInterface {
     fun getUserByToken(token: String): Response<User?>
     fun getUsers(limit: Int, offset: Int): Response<List<User>>
     fun create(username: String, email: String, password: String): Response<User?>
+    fun createWithGoogle(username: String, email: String): Response<User?>
     fun updateUser(token: String, name: String, email: String, newPw: String): Response<User?>
     fun checkToken(token: String): Response<Boolean>
     fun login(username: String?, email: String?, password: String): Response<LogInInfo?>
+    fun loginWithGoogle(username: String, email: String): Response<LogInInfo?>
     fun logout(token: String): Response<Boolean>
-
     fun putUserImage(userImg: UserImg)
     fun getUserImage(id: Int): Response<UserImg?>
 }
