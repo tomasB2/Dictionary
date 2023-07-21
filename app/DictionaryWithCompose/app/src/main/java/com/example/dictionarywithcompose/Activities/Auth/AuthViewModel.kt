@@ -110,8 +110,6 @@ class AuthViewModel : ViewModel() {
             uiState.value.username ?: "",
             uiState.value.password ?: "",
         )
-        Log.v("user", loginUser.token.toString())
-        Log.v("user", loginUser.name.toString())
         if (loginUser.name == null || loginUser.token == null) {
             uiState.value = uiState.value.copy(
                 isLoading = false,
@@ -125,7 +123,7 @@ class AuthViewModel : ViewModel() {
             ).also {
                 val user = dbHelper.getUserLogin()
                 Log.v("user", user.toString())
-                it.putExtra("username", uiState.value.username) // passar a ir buscar a db e atualizar na função de random
+                it.putExtra("username", uiState.value.username)
                 startActivity(context, it, null)
             }
         }
@@ -138,8 +136,6 @@ class AuthViewModel : ViewModel() {
     }
 
     private suspend fun loginUser(username: String, password: String): AuthResult {
-        // TODO: Fazer o pedido à API, por enquanto permite testar retornando um valor aleatório
-        /*val list = listOf(true, false)*/
         val authMedia = AuthMedia(name = username, password = password)
         return AuthenticationImpl.authenticate(authMedia)
     }

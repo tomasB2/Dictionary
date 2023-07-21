@@ -35,7 +35,7 @@ fun CustomSwithButton() {
 
     val swipeableState = rememberSwipeableState(0)
     val sizePx = with(LocalDensity.current) { height.toPx() }
-    val anchors = mapOf(0f to 0, sizePx to 1) // Maps anchor points (in px) to states
+    val anchors = mapOf(0f to 0, sizePx to 1)
     val isChecked = swipeableState.currentValue == 1
     fun colorOFBackground(): Color {
         if (isChecked) {

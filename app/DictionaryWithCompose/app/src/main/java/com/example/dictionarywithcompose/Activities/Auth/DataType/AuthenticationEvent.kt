@@ -1,8 +1,6 @@
-package com.example.dictionarywithcompose.Activities.Auth.DataType
+package com.example.dictionarywithcompose.Activities.Auth.DataType // ktlint-disable package-name
 
 import android.content.Context
-
-// ktlint-disable package-name
 
 sealed class AuthenticationEvent {
 

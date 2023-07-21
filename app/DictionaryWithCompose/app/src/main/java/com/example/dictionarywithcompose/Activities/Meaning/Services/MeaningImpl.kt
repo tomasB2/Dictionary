@@ -51,7 +51,7 @@ object MeaningImpl : MeaningServices {
         val userToken: String? = null,
     )
     override suspend fun getWord(client: OkHttpClient, word: String, lang: String): List<MeaningContent> {
-        var mutableList : List<MeaningContent> = mutableListOf()
+        var mutableList: List<MeaningContent> = mutableListOf()
         Log.v("Meaning", "Requesting meaning")
         val language = toString(lang.map { it.lowercaseChar() })
         val wordUnder = toString(word.map { it.lowercaseChar() })
@@ -70,16 +70,16 @@ object MeaningImpl : MeaningServices {
                     Log.v("Meaning", "No meaning found")
                     mutableList = listOf(
                         MeaningContent(
-                        word,
-                        "No meaning found",
-                        "no example found"
-                        )
+                            word,
+                            "No meaning found",
+                            "no example found",
+                        ),
                     )
                     return@send
                 }
 
                 val a = parseResponseWithGson(it.body!!.string())
-               mutableList= a.meanings.buildList(word)
+                mutableList = a.meanings.buildList(word)
             },
         )
         return mutableList
@@ -101,20 +101,19 @@ private fun sort(list: List<Meaning>): Pair<Int, Int> {
     }
     return Pair(index, defIndex)
 }
-private fun List<Meaning>.buildList(word: String): List<MeaningContent>{
+private fun List<Meaning>.buildList(word: String): List<MeaningContent> {
     val list = mutableListOf<MeaningContent>()
     this.forEach {
-        meaning ->
-            meaning.definitions.forEach {
-                list.add(
-                    MeaningContent(
-                        word,
-                        it.definition,
-                        it.example ?: "No example found"
-                        )
-                )
-            }
-
+            meaning ->
+        meaning.definitions.forEach {
+            list.add(
+                MeaningContent(
+                    word,
+                    it.definition,
+                    it.example ?: "No example found",
+                ),
+            )
+        }
     }
     return list
 }

@@ -35,7 +35,7 @@ class MeaningViewModel : ViewModel() {
     val LANGUAGES_AVAILABLE = mutableMapOf<String, Int>(
         "pt" to R.drawable.portugal_flag,
         "en" to R.drawable.united_kingdom,
-    ) // explorar a hipotese de alterar para um enum
+    )
 
     fun updateDisplayWord(word: String) {
         meaningState.value = meaningState.value.copy(displayText = word)
@@ -52,9 +52,7 @@ class MeaningViewModel : ViewModel() {
         meaningState.value = meaningState.value.copy(uiState = uiState)
     }
 
-    fun handleCameraResult(event: CameraEvent) { // Existe de momento o problema de passar imensas funções para fazer cada coisa pequenina
-        // Ficaria resolvido se houvesse um handleEvent e os eventos nao fossem apenas de camera. Assim Podiam ser definidas as funções de updateText Localmente e evitar
-        // acomular tantos parametros, visto que está a ficar pouco extensivel o codigo
+    fun handleCameraResult(event: CameraEvent) {
         when (event) {
             is CameraEvent.PictureTaken -> {
                 updateText(

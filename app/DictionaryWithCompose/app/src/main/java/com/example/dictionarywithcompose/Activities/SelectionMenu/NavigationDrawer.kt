@@ -22,7 +22,6 @@ import androidx.compose.material.icons.filled.Book
 import androidx.compose.material.icons.filled.Camera
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material.icons.filled.Message
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.rememberScaffoldState
@@ -77,7 +76,7 @@ class NavigationDrawer : ComponentActivity() {
 fun TopBar(
     navController: NavController,
     onNavigationIconClick: () -> Unit,
-    //onMessageClick: () -> Unit,
+    // onMessageClick: () -> Unit,
 ) {
     TopAppBar(
         title = {
@@ -94,14 +93,6 @@ fun TopBar(
                 )
             }
         },
-        /*actions = {
-            IconButton(onClick = onMessageClick) {
-                Icon(
-                    imageVector = Icons.Default.Message,
-                    contentDescription = null,
-                )
-            }
-        },*/
     )
 }
 
@@ -129,9 +120,6 @@ fun MainNavigatorScreen(name: String) {
                     onNavigationIconClick = {
                         scope.launch { scaffoldState.drawerState.open() }
                     },
-                    /*onMessageClick = {
-                        navController.navigate(NavRoute.Chat)
-                    },*/
                 )
             }
         },
@@ -209,7 +197,6 @@ fun DrawerHeader(
             Text(text = "Smart Dictionary\n", fontSize = 24.sp)
             Text("Welcome $name")
         }
-        // TODO: add user name, retrieving from SQLite db
     }
 }
 

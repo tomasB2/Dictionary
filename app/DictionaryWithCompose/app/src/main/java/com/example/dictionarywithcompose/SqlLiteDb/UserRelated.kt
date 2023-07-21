@@ -40,9 +40,7 @@ class MyDatabaseHelper(context: Context) :
             db?.execSQL("ALTER TABLE $LIST_TABLE_NAME ADD COLUMN $COLUMN_LIST_MEANING TEXT")
             db?.execSQL("ALTER TABLE $LIST_TABLE_NAME ADD COLUMN $COLUMN_LIST_EXAMPLE TEXT")
         }
-        // Add other version-specific schema modifications as needed
 
-        // After applying the necessary modifications, update the database version
         db?.execSQL("PRAGMA user_version = $newVersion")
     }
     fun getLastImageResult(): String {

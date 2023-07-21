@@ -27,7 +27,6 @@ import com.example.dictionarywithcompose.Activities.Meaning.DataTypes.MeaningSta
 import com.example.dictionarywithcompose.Activities.Meaning.DataTypes.UiState
 import com.example.dictionarywithcompose.Activities.Meaning.MeaningComposable
 import com.example.dictionarywithcompose.Activities.Meaning.MeaningViewModel
-
 import com.example.dictionarywithcompose.Activities.Translation.DataTypes.TranslationContents
 import com.example.dictionarywithcompose.Activities.Translation.DataTypes.TranslationState
 import com.example.dictionarywithcompose.Activities.Translation.TranslationComposable
@@ -44,7 +43,6 @@ fun NavGraph(
     navHostController: NavHostController,
     startDestination: String,
     permissionState: MultiplePermissionsState,
-    // fixing the bug
 ) {
     val context = LocalContext.current
     val viewModel = MeaningViewModel()
@@ -158,7 +156,7 @@ fun MeaningScreen(
         availableLanguages = availableLanguages,
         updateDisplayWord = updateText,
         handleUiState = handleUiState,
-        attemptToSearchForNewWord = {first: String, second: String -> attemptToSearchForNewWord(first, second, context)},
+        attemptToSearchForNewWord = { first: String, second: String -> attemptToSearchForNewWord(first, second, context) },
         changeLanguage = changeLanguage,
         clickForward = { clickEvent(ClickEvent.Next(context)) },
         clickBackward = { clickEvent(ClickEvent.Previous(context)) },
