@@ -104,7 +104,7 @@ fun SearchBar(
                 availableLanguages = mapOf<String, Int>(
                     "pt" to R.drawable.portugal_flag,
                     "en" to R.drawable.united_kingdom,
-                ), // as linguagens passarem a ser definidas no viewModel e o display feito consuante a lista, separando a logica da UI
+                ),
                 changeLanguage = changeLanguage,
             )
         }

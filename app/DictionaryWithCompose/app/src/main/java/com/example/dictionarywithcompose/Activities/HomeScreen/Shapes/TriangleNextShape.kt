@@ -22,7 +22,7 @@ fun TriangleNextShape(onPreviousClick: () -> Unit) {
                 path.close()
                 onDrawBehind {
                     drawPath(path, Color.Black, style = Stroke(width = 10f))
-                    drawPath(path, Color.Black) // Fill the path with black
+                    drawPath(path, Color.Black)
                 }
             }
             .fillMaxSize().clickable(onClick = onPreviousClick),
@@ -41,7 +41,7 @@ fun TriangleBackShape(onPreviousClick: () -> Unit) {
                 path.close()
                 onDrawBehind {
                     drawPath(path, Color.Black, style = Stroke(width = 10f))
-                    drawPath(path, Color.Black) // Fill the path with black
+                    drawPath(path, Color.Black)
                 }
             }
             .fillMaxSize().clickable(onClick = onPreviousClick),
