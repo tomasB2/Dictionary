@@ -2,8 +2,8 @@ package com.example.dictionarywithcompose.Activities.SelectionMenu // ktlint-dis
 
 import android.Manifest // ktlint-disable import-ordering
 import android.annotation.SuppressLint // ktlint-disable import-ordering
-import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.clickable
@@ -18,9 +18,11 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material.BottomNavigation
 import androidx.compose.material.BottomNavigationItem
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Book
 import androidx.compose.material.icons.filled.Camera
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.Message
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.rememberScaffoldState
@@ -36,7 +38,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -56,13 +57,15 @@ class NavigationDrawer : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val username = intent.getStringExtra("username")
+        Log.v("AAAA", username ?: "no user")
         setContent {
             ThemeConstructor {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background,
                 ) {
-                    MainNavigatorScreen(LocalContext.current)
+                    MainNavigatorScreen(name = username ?: "User")
                 }
             }
         }
@@ -74,7 +77,7 @@ class NavigationDrawer : ComponentActivity() {
 fun TopBar(
     navController: NavController,
     onNavigationIconClick: () -> Unit,
-
+    //onMessageClick: () -> Unit,
 ) {
     TopAppBar(
         title = {
@@ -91,13 +94,21 @@ fun TopBar(
                 )
             }
         },
+        /*actions = {
+            IconButton(onClick = onMessageClick) {
+                Icon(
+                    imageVector = Icons.Default.Message,
+                    contentDescription = null,
+                )
+            }
+        },*/
     )
 }
 
 @OptIn(ExperimentalPermissionsApi::class)
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter", "CoroutineCreationDuringComposition")
 @Composable
-fun MainNavigatorScreen(context: Context) {
+fun MainNavigatorScreen(name: String) {
     val scaffoldState = rememberScaffoldState()
     val navController = rememberNavController()
     val scope = rememberCoroutineScope()
@@ -112,16 +123,22 @@ fun MainNavigatorScreen(context: Context) {
     androidx.compose.material.Scaffold(
         scaffoldState = scaffoldState,
         topBar = {
-            TopBar(
-                navController = navController,
-                onNavigationIconClick = {
-                    scope.launch { scaffoldState.drawerState.open() }
-                },
-            )
+            Row(Modifier.fillMaxWidth()) {
+                TopBar(
+                    navController = navController,
+                    onNavigationIconClick = {
+                        scope.launch { scaffoldState.drawerState.open() }
+                    },
+                    /*onMessageClick = {
+                        navController.navigate(NavRoute.Chat)
+                    },*/
+                )
+            }
         },
         bottomBar = { BottomBarNav(navController = navController, ::updatePermitonState, permissionsState) },
         drawerContent = {
-            DrawerHeader()
+            Log.v("AAAA", name)
+            DrawerHeader(name)
             Spacer(modifier = Modifier.width(16.dp))
             DrawerBody(navController = navController, close = {
                 scope.launch {
@@ -134,7 +151,7 @@ fun MainNavigatorScreen(context: Context) {
         drawerContentColor = MaterialTheme.colorScheme.background,
     ) {
         Row() {
-            NavGraph(navHostController = navController, startDestination = "home", permissionsState)
+            NavGraph(navHostController = navController, startDestination = NavRoute.Home, permissionsState)
         }
     }
 }
@@ -148,8 +165,8 @@ fun BottomBarNav(navController: NavHostController, updatePermition: KFunction0<U
         modifier = Modifier.fillMaxWidth(),
     ) {
         BottomNavigationItem(
-            selected = navController.currentDestination?.route == "home",
-            onClick = { navController.navigate("home") },
+            selected = navController.currentDestination?.route == "Home",
+            onClick = { navController.navigate("Home") },
             icon = {
                 Icon(
                     imageVector = Icons.Default.Home,
@@ -159,27 +176,29 @@ fun BottomBarNav(navController: NavHostController, updatePermition: KFunction0<U
             label = { Text("Home") },
         )
         BottomNavigationItem(
-            selected = navController.currentDestination?.route == "camera",
+            selected = navController.currentDestination?.route == "Dictionary",
             onClick = {
                 if (permition.allPermissionsGranted) {
-                    navController.navigate("camera")
+                    navController.navigate("Dictionary")
                 } else {
                     updatePermition()
                 }
             },
             icon = {
                 Icon(
-                    imageVector = Icons.Default.Camera,
-                    contentDescription = "Camera",
+                    imageVector = Icons.Default.Book,
+                    contentDescription = "Dictionary",
                 )
             },
-            label = { Text("Image Search") },
+            label = { Text("Dictionary") },
         )
     }
 }
 
 @Composable
-fun DrawerHeader() {
+fun DrawerHeader(
+    name: String = "Name",
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -188,7 +207,7 @@ fun DrawerHeader() {
     ) {
         Column {
             Text(text = "Smart Dictionary\n", fontSize = 24.sp)
-            Text("Welcome Name")
+            Text("Welcome $name")
         }
         // TODO: add user name, retrieving from SQLite db
     }
@@ -229,17 +248,17 @@ fun DrawerBody(navController: NavHostController, close: () -> Unit) {
         )
         DrawerMenuItem(
             iconDrawableId = Icons.Default.Search,
-            text = NavRoute.Search,
+            text = NavRoute.Dictionary,
             onItemClick = {
-                navController.navigate(NavRoute.Search)
+                navController.navigate(NavRoute.Dictionary)
                 close()
             },
         )
         DrawerMenuItem(
             iconDrawableId = Icons.Default.Camera,
-            text = NavRoute.Camera,
+            text = NavRoute.Translation,
             onItemClick = {
-                navController.navigate(NavRoute.Camera)
+                navController.navigate(NavRoute.Translation)
                 close()
             },
         )

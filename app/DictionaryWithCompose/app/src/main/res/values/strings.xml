@@ -12,9 +12,10 @@
     <string name="cd_show_password">Show Password</string>
     <string name="cd_hide_password">Hide Password</string>
     <string name="cd_login">Login</string>
-    <string name="cd_register">Sign In</string>
+    <string name="cd_register">Sign Up</string>
     <string name="title_activity_navigation_drawer">NavigationDrawer</string>
     <string name="cd_open_navigation_drawer">Navigation Drawer</string>
     <string name="sun_image">Sun</string>
     <string name="moon_image">Moon</string>
+    <string name="label_Username">profile name</string>
 </resources>

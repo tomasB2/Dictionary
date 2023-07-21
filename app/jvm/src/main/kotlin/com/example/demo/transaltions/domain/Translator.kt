@@ -9,7 +9,7 @@ import java.io.FileInputStream
 object Translator {
 
     private val credentials: GoogleCredentials = GoogleCredentials.fromStream(
-        FileInputStream("D:\\ps\\translatorKey.json"),
+        FileInputStream("translatorKey.json"),
     )
 
     private val service = TranslateOptions.newBuilder()

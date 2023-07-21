@@ -1,7 +1,7 @@
-package com.example.dictionarywithcompose.Activities.Auth.DataType // ktlint-disable filename// ktlint-disable package-name// ktlint-disable filename// ktlint-disable package-name
-// ktlint-disable filename
+package com.example.dictionarywithcompose.Activities.Auth.DataType // ktlint-disable filename // ktlint-disable package-name
 
 data class AuthState(
+    val username: String? = null,
     val authenticationMode: AuthenticationMode = AuthenticationMode.SIGN_IN,
     val email: String? = null,
     val password: String? = null,

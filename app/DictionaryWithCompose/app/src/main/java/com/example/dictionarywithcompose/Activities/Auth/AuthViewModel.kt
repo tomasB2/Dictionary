@@ -1,15 +1,25 @@
 package com.example.dictionarywithcompose.Activities.Auth // ktlint-disable package-name
 
+import android.content.Context
+import android.content.Intent
+import android.util.Log
+import androidx.core.content.ContextCompat.startActivity
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.dictionarywithcompose.Activities.Auth.DataType.AuthState
 import com.example.dictionarywithcompose.Activities.Auth.DataType.AuthenticationEvent
 import com.example.dictionarywithcompose.Activities.Auth.DataType.AuthenticationMode
 import com.example.dictionarywithcompose.Activities.Auth.DataType.PasswordRequirement
+import com.example.dictionarywithcompose.Activities.Auth.DataType.WebRelated.AuthMedia
+import com.example.dictionarywithcompose.Activities.Auth.DataType.WebRelated.AuthResult
+import com.example.dictionarywithcompose.Activities.Auth.Services.AuthenticationImpl
+import com.example.dictionarywithcompose.Activities.SelectionMenu.NavigationDrawer
+import com.example.dictionarywithcompose.SqlLiteDb.MyDatabaseHelper
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.launch
 
 class AuthViewModel : ViewModel() {
     val uiState = MutableStateFlow(AuthState())
-
     fun handleEvent(authenticationEvent: AuthenticationEvent) {
         when (authenticationEvent) {
             is AuthenticationEvent.ToggleAuthenticationMode -> {
@@ -22,13 +32,24 @@ class AuthViewModel : ViewModel() {
                 updatePassword(authenticationEvent.password)
             }
             is AuthenticationEvent.Authenticate -> {
-                authenticate()
+                changeToAuthenticate(authenticationEvent.context)
             }
             is AuthenticationEvent.ErrorDismissed -> {
                 dismissError()
             }
+            is AuthenticationEvent.Loading -> {
+                authenticate()
+            }
+            is AuthenticationEvent.UsernameChanged -> {
+                updateUsername(authenticationEvent.username)
+            }
         }
     }
+
+    private fun updateUsername(username: String) {
+        uiState.value = uiState.value.copy(username = username)
+    }
+
     private fun toggleAuthenticationMode() {
         val authenticationMode = uiState.value.authenticationMode
         val newAuthenticationMode = if (
@@ -63,16 +84,84 @@ class AuthViewModel : ViewModel() {
         )
     }
     private fun authenticate() {
-        uiState.value = uiState.value.copy(
-            isLoading = true,
-        )
-        /**
-         * TODO: Add authentication logic here
-         */
+        viewModelScope.launch {
+            uiState.value = uiState.value.copy(
+                isLoading = true,
+            )
+        }
     }
+    private fun changeToAuthenticate(context: Context) {
+        viewModelScope.launch {
+            goToHome(context)
+        }
+    }
+    private suspend fun goToHome(context: Context) {
+        val dbHelper = MyDatabaseHelper(context)
+        if (uiState.value.authenticationMode == AuthenticationMode.SIGN_UP) {
+            signUpUser(
+                uiState.value.username ?: "",
+                uiState.value.email ?: "",
+                uiState.value.password ?: "",
+            )
+            Log.v("user", "sign up")
+            return
+        }
+        val loginUser = loginUser(
+            uiState.value.username ?: "",
+            uiState.value.password ?: "",
+        )
+        Log.v("user", loginUser.token.toString())
+        Log.v("user", loginUser.name.toString())
+        if (loginUser.name == null || loginUser.token == null) {
+            uiState.value = uiState.value.copy(
+                isLoading = false,
+                authenticationMode = AuthenticationMode.SIGN_IN,
+            )
+            return
+        } else {
+            Intent(
+                context,
+                NavigationDrawer::class.java,
+            ).also {
+                val user = dbHelper.getUserLogin()
+                Log.v("user", user.toString())
+                it.putExtra("username", uiState.value.username) // passar a ir buscar a db e atualizar na função de random
+                startActivity(context, it, null)
+            }
+        }
+    }
+
     private fun dismissError() {
         uiState.value = uiState.value.copy(
             error = null,
+        )
+    }
+
+    private suspend fun loginUser(username: String, password: String): AuthResult {
+        // TODO: Fazer o pedido à API, por enquanto permite testar retornando um valor aleatório
+        /*val list = listOf(true, false)*/
+        val authMedia = AuthMedia(name = username, password = password)
+        return AuthenticationImpl.authenticate(authMedia)
+    }
+
+    private suspend fun signUpUser(username: String, email: String, password: String) {
+        val authMedia = AuthMedia(name = username, email = email, password = password)
+        AuthenticationImpl.signUp(
+            authMedia,
+            callback = {
+                uiState.value = uiState.value.copy(
+                    isLoading = false,
+                    authenticationMode = AuthenticationMode.SIGN_IN,
+                )
+            },
+            onError = {
+                uiState.value = uiState.value.copy(
+                    isLoading = false,
+                    username = "",
+                    email = "",
+                    password = "",
+                )
+            },
         )
     }
 }

@@ -18,8 +18,10 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -27,7 +29,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -37,8 +38,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.text.TextStyle
@@ -55,6 +56,7 @@ import com.example.dictionarywithcompose.Activities.Auth.DataType.Authentication
 import com.example.dictionarywithcompose.Activities.Auth.DataType.AuthenticationMode
 import com.example.dictionarywithcompose.Activities.ThemeRelated.ThemeConstructor
 import com.example.dictionarywithcompose.R
+import com.example.dictionarywithcompose.Utils.getTextFromResourceId
 
 class AuthActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -91,26 +93,22 @@ fun AuthContents(
     authenticationState: AuthState,
     handleEvent: (event: AuthenticationEvent) -> Unit,
 ) {
+    val context = LocalContext.current
     Box(
-        modifier = modifier.background(
-            /*Brush.verticalGradient(
-                colorStops = arrayOf(
-                    0.0f to MaterialTheme.colorScheme.background,
-                    0.35f to OceanBlue,
-                    1f to DarkPurpleBlue,
-                ),
-            ),*/
-            MaterialTheme.colorScheme.background,
+        modifier = modifier.fillMaxSize().background(
+            Color.White,
         ),
         contentAlignment = Alignment.Center,
     ) {
         if (authenticationState.isLoading) {
             CircularProgressIndicator()
+            handleEvent(AuthenticationEvent.Authenticate(context))
         } else {
             AuthForm(
                 Modifier.fillMaxSize(),
                 authenticationState.email,
                 authenticationState.password,
+                authenticationState.username,
                 authenticationState.authenticationMode,
                 onEmailChanged = { email ->
                     handleEvent(
@@ -122,8 +120,13 @@ fun AuthContents(
                         AuthenticationEvent.PasswordChanged(password),
                     )
                 },
+                onUsernameChanged = { username ->
+                    handleEvent(
+                        AuthenticationEvent.UsernameChanged(username),
+                    )
+                },
                 onAuthenticate = {
-                    handleEvent(AuthenticationEvent.Authenticate)
+                    handleEvent(AuthenticationEvent.Loading)
                 },
                 onToggleAuthenticationMode = {
                     handleEvent(
@@ -140,58 +143,103 @@ fun AuthForm(
     modifier: Modifier = Modifier,
     email: String?,
     password: String?,
+    username: String?,
     authenticationMode: AuthenticationMode,
     onEmailChanged: (email: String) -> Unit,
     onPasswordChanged: (password: String) -> Unit,
     onAuthenticate: () -> Unit,
     onToggleAuthenticationMode: () -> Unit,
+    onUsernameChanged: (username: String) -> Unit,
 ) {
-    Column(
-        modifier = modifier,
-        horizontalAlignment = Alignment.CenterHorizontally,
+    Box(
+        modifier = modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center,
     ) {
-        Spacer(modifier = Modifier.height(32.dp))
-        AuthTitle(
-            modifier,
-            authenticationMode = authenticationMode,
-        )
-        Spacer(modifier = Modifier.height(40.dp))
-        Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 32.dp),
-
+        Column(
+            modifier = modifier,
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            Column(
-                modifier = Modifier.padding(16.dp),
-                horizontalAlignment =
-                Alignment.CenterHorizontally,
+            Spacer(modifier = Modifier.height(32.dp))
+            AuthTitle(
+                modifier,
+                authenticationMode = authenticationMode,
+            )
+            Spacer(modifier = Modifier.height(40.dp))
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 32.dp),
+
             ) {
-                EmailInput(
-                    modifier = Modifier.fillMaxWidth(),
-                    email = email ?: "",
-                    onEmailChanged = onEmailChanged,
-                )
-                PasswordInput(
-                    modifier = Modifier.fillMaxWidth(),
-                    password = password ?: "",
-                    onPasswordChanged = onPasswordChanged,
-                    onDoneClicked = onAuthenticate,
-                )
+                Column(
+                    modifier = Modifier.padding(16.dp),
+                    horizontalAlignment =
+                    Alignment.CenterHorizontally,
+                ) {
+                    if (authenticationMode == AuthenticationMode.SIGN_UP) {
+                        EmailInput(
+                            modifier = Modifier.fillMaxWidth(),
+                            email = email ?: "",
+                            onEmailChanged = onEmailChanged,
+                        )
+                    }
+                    UsernameInput(
+                        modifier = Modifier.fillMaxWidth(),
+                        username = username ?:"",
+                        onUsernameChanged = onUsernameChanged,
+                    )
+                    PasswordInput(
+                        modifier = Modifier.fillMaxWidth(),
+                        password = password ?: "",
+                        onPasswordChanged = onPasswordChanged,
+                    )
+                }
+                Row(verticalAlignment = Alignment.Bottom, horizontalArrangement = Arrangement.Center) {
+                    TogglesState(
+                        authenticationMode = authenticationMode,
+                        onClicked = {
+                            onAuthenticate()
+                        },
+                    )
+                }
             }
-            Row(verticalAlignment = Alignment.Bottom, horizontalArrangement = Arrangement.Center) {
-                TogglesState(
-                    authenticationMode = authenticationMode,
-                    onClicked = {
-                        onToggleAuthenticationMode()
-                    },
-                )
+        }
+        Box(Modifier.align(Alignment.BottomCenter)) {
+            StateDisplayedBottom(authenticationState = authenticationMode) {
+                onToggleAuthenticationMode()
             }
         }
     }
 }
 
-@OptIn(ExperimentalTextApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun UsernameInput(modifier: Modifier, username: String, onUsernameChanged: (username: String) -> Unit) {
+    TextField(
+        modifier = modifier,
+        value = username,
+        onValueChange = { username ->
+            onUsernameChanged(username)
+        },
+        label = {
+            Text(
+                text = stringResource(R.string.label_Username),
+            )
+        },
+        leadingIcon = {
+            Icon(
+                imageVector = Icons.Default.Person,
+                contentDescription = null,
+            )
+        },
+        singleLine = true,
+        keyboardOptions = KeyboardOptions(
+            keyboardType = KeyboardType.Text,
+            imeAction = ImeAction.Next,
+        ),
+    )
+}
+
 @Composable
 fun AuthTitle(modifier: Modifier = Modifier.fillMaxWidth(), authenticationMode: AuthenticationMode) {
     Text(
@@ -205,19 +253,11 @@ fun AuthTitle(modifier: Modifier = Modifier.fillMaxWidth(), authenticationMode: 
                 }
             },
         ),
-        color = Color.White,
+        color = Color.Black,
         style = TextStyle(
-            fontSize = 24.sp,
+            fontSize = 30.sp,
             fontWeight = FontWeight.Bold,
-            brush = Brush.verticalGradient(
-                colorStops = arrayOf(
-                    0.0f to Color(0xFF835597),
-                    0.35f to Color(0xFFCAB9EB),
-                    1f to Color(0xFF3D3D94),
-                ),
-            ),
         ),
-
     )
 }
 
@@ -261,7 +301,6 @@ fun PasswordInput(
     modifier: Modifier = Modifier,
     password: String,
     onPasswordChanged: (email: String) -> Unit,
-    onDoneClicked: () -> Unit,
 ) {
     var isPasswordHidden by remember {
         mutableStateOf(true)
@@ -321,11 +360,11 @@ fun TogglesState(authenticationMode: AuthenticationMode, onClicked: () -> Unit) 
         horizontalArrangement = Arrangement.SpaceBetween,
     ) {
         if (authenticationMode == AuthenticationMode.SIGN_IN) {
-            ToggleStateContent(primaryText = "Don't have an account?", resourceId = R.string.cd_register) {
+            ToggleStateContent(resourceId = R.string.cd_login) {
                 onClicked()
             }
         } else {
-            ToggleStateContent(primaryText = "Already have an account?", resourceId = R.string.cd_login) {
+            ToggleStateContent(resourceId = R.string.cd_register) {
                 onClicked()
             }
         }
@@ -334,26 +373,63 @@ fun TogglesState(authenticationMode: AuthenticationMode, onClicked: () -> Unit) 
 
 @Composable
 fun ToggleStateContent(
-    primaryText: String,
     resourceId: Int,
     onClicked: () -> Unit,
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Text(
-            text = primaryText,
-        )
-        TextButton(
-            onClick = {
-                onClicked()
-            },
+        Button(onClick = { onClicked() }) {
+            Text(text = getTextFromResourceId(context = LocalContext.current, resourceId))
+        }
+    }
+}
+
+@Composable
+fun ChangeState(
+    primaryText: String,
+    resourceId: Int,
+    onClicked: () -> Unit,
+) {
+    Box(
+        Modifier.fillMaxWidth(),
+        contentAlignment = Alignment.BottomCenter,
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 16.dp),
+            verticalAlignment = Alignment.Bottom,
+            horizontalArrangement = Arrangement.Center,
         ) {
+            Text(text = primaryText)
+            Spacer(modifier = Modifier.padding(4.dp))
             Text(
-                text = stringResource(
-                    resourceId,
+                text = getTextFromResourceId(LocalContext.current, resourceId),
+                modifier = Modifier.clickable {
+                    onClicked()
+                },
+                style = TextStyle(
+                    color = Color.Blue,
                 ),
             )
         }
     }
 }
+
+@Composable
+fun StateDisplayedBottom(
+    authenticationState: AuthenticationMode,
+    onClicked: () -> Unit,
+) {
+    if (authenticationState == AuthenticationMode.SIGN_IN) {
+        ChangeState(primaryText = "Don't have an account?", resourceId = R.string.cd_register) {
+            onClicked()
+        }
+    } else {
+        ChangeState(primaryText = "Already have an account?", resourceId = R.string.cd_login) {
+            onClicked()
+        }
+    }
+}
+

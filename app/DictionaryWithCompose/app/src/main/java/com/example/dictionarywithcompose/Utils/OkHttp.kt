@@ -1,53 +1,28 @@
 package com.example.dictionarywithcompose.Utils // ktlint-disable package-name
 
-import android.util.Log
 import okhttp3.Call
 import okhttp3.Callback
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.OkHttpClient
 import okhttp3.Request
-import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.Response
 import java.io.IOException
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
+import kotlin.coroutines.suspendCoroutine
+suspend fun <T> Request.send(okHttpClient: OkHttpClient, handler: (Response) -> T): T =
 
-class OkHttp {
-
-    fun get(url: String) {
-        val request = Request.Builder()
-            .url(url)
-            .build()
-        client.newCall(request).enqueue(object : Callback {
+    suspendCoroutine { continuation ->
+        okHttpClient.newCall(request = this).enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {
-                e.printStackTrace()
+                continuation.resumeWithException(e)
             }
 
             override fun onResponse(call: Call, response: Response) {
-                response.body?.string()?.let {
-                    Log.d("OkHttp", it)
+                try {
+                    continuation.resume(handler(response))
+                } catch (t: Throwable) {
+                    continuation.resumeWithException(t)
                 }
             }
         })
     }
-
-    fun post(url: String, json: String) {
-        val body = json.toRequestBody("application/json; charset=utf-8".toMediaTypeOrNull())
-        val request = Request.Builder()
-            .url(url)
-            .post(body)
-            .build()
-        client.newCall(request).enqueue(object : Callback {
-            override fun onFailure(call: Call, e: IOException) {
-                e.printStackTrace()
-            }
-
-            override fun onResponse(call: Call, response: Response) {
-                response.body?.string()?.let {
-                    Log.d("OkHttp", it)
-                }
-            }
-        })
-    }
-    companion object {
-        private val client = OkHttpClient()
-    }
-}
